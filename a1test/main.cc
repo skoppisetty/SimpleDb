@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "Record.h"
+#include "DBFile.h"
 #include <stdlib.h>
 using namespace std;
 
@@ -20,7 +21,7 @@ int main () {
 	}
 
 	// suck up the schema from the file
-	Schema lineitem ("catalog", "lineitem");
+	Schema lineitem ("catalog", "region");
 
 	// grow the CNF expression from the parse tree 
 	CNF myComparison;
@@ -31,10 +32,10 @@ int main () {
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("/home/suresh/SimpleDb/DATA/10M/lineitem.tbl", "r");
+        FILE *tableFile = fopen ("/home/suresh/SimpleDb/DATA/10M/region.tbl", "r");
 
         Record temp;
-        Schema mySchema ("catalog", "lineitem");
+        Schema mySchema ("catalog", "region");
 
 	//char *bits = literal.GetBits ();
 	//cout << " numbytes in rec " << ((int *) bits)[0] << endl;
@@ -58,22 +59,28 @@ int main () {
 
         }
 
-    File result;
+    DBFile result;
     char* fname;
     fname = "./results.txt";
-    result.Open(0,fname);
-    cout << result.GetLength() << endl;
-    result.AddPage (&sample, result.GetLength());
-    result.Close();
+    result.Create(fname,heap,NULL);
+  	result.Add(temp);
 
-    Page dats;
-    result.Open(1,fname);
-    result.GetPage(&dats,1);
+    // result.AddPage (&sample, result.GetLength());
+    // result.Close();
+  	result.Close();
 
-    while(dats.GetFirst(&temp)){
-    	temp.Print (&mySchema);
-    	break;
-    }
+
+
+  	// checking
+    // Page dats;
+    // File r;
+    // r
+    // r.Open(1,fname);
+    // r.GetPage(&dats,0);
+
+    // while(dats.GetFirst(&temp)){
+    // 	temp.Print (&mySchema);
+    // }
 
 
 
