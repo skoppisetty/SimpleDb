@@ -31,7 +31,7 @@ int main () {
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("/home/suresh/dbi/DATA/10M/lineitem.tbl", "r");
+        FILE *tableFile = fopen ("/home/suresh/SimpleDb/DATA/10M/lineitem.tbl", "r");
 
         Record temp;
         Schema mySchema ("catalog", "lineitem");
@@ -43,6 +43,7 @@ int main () {
         // read in all of the records from the text file and see if they match
 	// the CNF expression that was typed in
 	int counter = 0;
+	Page sample;
 	ComparisonEngine comp;
         while (temp.SuckNextRecord (&mySchema, tableFile) == 1) {
 		counter++;
@@ -50,10 +51,31 @@ int main () {
 			cerr << counter << "\n";
 		}
 
-		if (comp.Compare (&temp, &literal, &myComparison))
-                	temp.Print (&mySchema);
+		sample.Append(&temp);
+		// break;
+		// if (comp.Compare (&temp, &literal, &myComparison))
+  //               	temp.Print (&mySchema);
 
         }
+
+    File result;
+    char* fname;
+    fname = "./results.txt";
+    result.Open(0,fname);
+    cout << result.GetLength() << endl;
+    result.AddPage (&sample, result.GetLength());
+    result.Close();
+
+    Page dats;
+    result.Open(1,fname);
+    result.GetPage(&dats,1);
+
+    while(dats.GetFirst(&temp)){
+    	temp.Print (&mySchema);
+    	break;
+    }
+
+
 
 }
 
