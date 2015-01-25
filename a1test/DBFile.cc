@@ -22,7 +22,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
 	p.EmptyItOut();
-	f.Open(0,loadpath);
+	f.Open(1,loadpath);
 	f.GetPage(&p,0);
 	curpage = 0;
     totalpages = f.GetLength();
@@ -45,6 +45,7 @@ void DBFile::MoveFirst () {
 }
 
 int DBFile::Close () {
+	cout << f.GetLength() << "\n" ;
 	try{
 		f.AddPage(&p, curpage);
 		p.EmptyItOut();
@@ -71,17 +72,25 @@ void DBFile::Add (Record &rec) {
 }
 
 int DBFile::GetNext (Record &fetchme) {
+	//cout << curpage << endl;
 	if(p.GetFirst(&fetchme)){
 		return 1;
 	}
 	else{
+		//cout << "pagechange" << curpage << " " << totalpages << endl;
+		if(curpage < totalpages - 2){
+			curpage++;
+			f.GetPage(&p,curpage);
+			return 1;
+		}
 		return 0;
 	}
+	
 }
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	ComparisonEngine comp;
-	while(p.GetFirst(&fetchme)){
+	while(GetNext(fetchme)){
 		if (comp.Compare (&fetchme, &literal, &cnf)){
 			return 1;
 		}	

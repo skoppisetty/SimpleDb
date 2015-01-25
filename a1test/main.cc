@@ -21,7 +21,7 @@ int main () {
 	}
 
 	// suck up the schema from the file
-	Schema lineitem ("catalog", "region");
+	Schema lineitem ("catalog", "lineitem");
 
 	// grow the CNF expression from the parse tree 
 	CNF myComparison;
@@ -32,10 +32,10 @@ int main () {
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("./DATA/10M/region.tbl", "r");
+        FILE *tableFile = fopen ("../DATA/1G/lineitem.tbl", "r");
 
         Record temp;
-        Schema mySchema ("catalog", "region");
+        Schema mySchema ("catalog", "lineitem");
 
 	//char *bits = literal.GetBits ();
 	//cout << " numbytes in rec " << ((int *) bits)[0] << endl;
@@ -70,14 +70,19 @@ int main () {
     // result.Close();
   	result.Close();
 
-
+  	cout << "check" << endl;
   	DBFile check;
   	Record rec;
-  	check.Load(&mySchema,fname);
+  	check.Load(mySchema,fname);
+  	cout << "check" << endl;
 	check.MoveFirst();
-	while(check.GetNext(rec)){
+	cout << "check" << endl;
+	// int i=0;
+	while(check.GetNext(rec, myComparison ,literal)){
 		rec.Print (&mySchema);
+		// i++;
 	}
+
 	check.Close();
   	// checking
     // Page dats;
