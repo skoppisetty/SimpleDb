@@ -22,7 +22,10 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
 	p.EmptyItOut();
-
+	f.Open(0,loadpath);
+	f.GetPage(&p,0);
+	curpage = 0;
+    totalpages = f.GetLength();
 }
 
 int DBFile::Open (char *f_path) {
@@ -77,6 +80,7 @@ int DBFile::GetNext (Record &fetchme) {
 }
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+	ComparisonEngine comp;
 	while(p.GetFirst(&fetchme)){
 		if (comp.Compare (&fetchme, &literal, &cnf)){
 			return 1;

@@ -71,24 +71,31 @@ int main () {
   	result.Close();
 
 
-
+  	DBFile check;
+  	Record rec;
+  	check.Load(&mySchema,fname);
+	check.MoveFirst();
+	while(check.GetNext(rec)){
+		rec.Print (&mySchema);
+	}
+	check.Close();
   	// checking
-    Page dats;
-    File r;
-    Record stat;
-    r.Open(1,fname);
-    cout << r.GetLength() << endl;
-    r.GetPage(&dats,0);
+    // Page dats;
+    // File r;
+    // Record stat;
+    // r.Open(1,fname);
+    // cout << r.GetLength() << endl;
+    // r.GetPage(&dats,0);
 
 
-    for(int i=0;i<5;i++){
+    // for(int i=0;i<5;i++){
 	    
-    	dats.GetFirst(&stat);
-    	cout << "record: " << i << endl;
-    	stat.Print (&mySchema);
-    }
+    // 	dats.GetFirst(&stat);
+    // 	cout << "record: " << i << endl;
+    // 	stat.Print (&mySchema);
+    // }
 
-    r.Close();
+    // r.Close();
 
 }
 
