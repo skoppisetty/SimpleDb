@@ -32,7 +32,7 @@ int main () {
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("/home/suresh/SimpleDb/DATA/10M/region.tbl", "r");
+        FILE *tableFile = fopen ("./DATA/10M/region.tbl", "r");
 
         Record temp;
         Schema mySchema ("catalog", "region");
@@ -80,8 +80,11 @@ int main () {
     cout << r.GetLength() << endl;
     r.GetPage(&dats,0);
 
+
     for(int i=0;i<5;i++){
+	    
     	dats.GetFirst(&stat);
+    	cout << "record: " << i << endl;
     	stat.Print (&mySchema);
     }
 
