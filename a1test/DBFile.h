@@ -15,9 +15,10 @@ typedef enum {heap, sorted, tree} fType;
 class DBFile {
 private:
 	File f;
+	Page p;
 	int curpage;
 	int totalpages;
-	
+
 public:
 	DBFile (); 
 

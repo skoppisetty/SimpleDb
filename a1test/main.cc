@@ -44,26 +44,27 @@ int main () {
         // read in all of the records from the text file and see if they match
 	// the CNF expression that was typed in
 	int counter = 0;
-	Page sample;
+	// Page sample;
+	DBFile result;
+    char* fname;
+    fname = "./results.txt";
+    result.Create(fname,heap,NULL);
 	ComparisonEngine comp;
         while (temp.SuckNextRecord (&mySchema, tableFile) == 1) {
 		counter++;
 		if (counter % 10000 == 0) {
 			cerr << counter << "\n";
 		}
-
-		sample.Append(&temp);
+		result.Add(temp);
+		// sample.Append(&temp);
 		// break;
 		// if (comp.Compare (&temp, &literal, &myComparison))
   //               	temp.Print (&mySchema);
 
         }
 
-    DBFile result;
-    char* fname;
-    fname = "./results.txt";
-    result.Create(fname,heap,NULL);
-  	result.Add(temp);
+
+  
 
     // result.AddPage (&sample, result.GetLength());
     // result.Close();
@@ -72,17 +73,19 @@ int main () {
 
 
   	// checking
-    // Page dats;
-    // File r;
-    // r
-    // r.Open(1,fname);
-    // r.GetPage(&dats,0);
+    Page dats;
+    File r;
+    Record stat;
+    r.Open(1,fname);
+    cout << r.GetLength() << endl;
+    r.GetPage(&dats,0);
 
-    // while(dats.GetFirst(&temp)){
-    // 	temp.Print (&mySchema);
-    // }
+    for(int i=0;i<5;i++){
+    	dats.GetFirst(&stat);
+    	stat.Print (&mySchema);
+    }
 
-
+    r.Close();
 
 }
 
