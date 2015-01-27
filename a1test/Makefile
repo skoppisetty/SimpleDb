@@ -1,10 +1,12 @@
 CC = g++ -O2 -Wno-deprecated 
-
+LDFLAGS := -pthread -lgtest -lgtest_main -L/usr/lib
 tag = -i
 
 ifdef linux
 tag = -n
 endif
+
+all: main gtesting
 
 test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
 	$(CC) -o test.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
@@ -44,6 +46,9 @@ y.tab.o: Parser.y
 lex.yy.o: Lexer.l
 	lex  Lexer.l
 	gcc  -c lex.yy.c
+
+gtesting: 
+	$(CC) Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o DBFile.o gtesting.cc -o gtesting.o $(LDFLAGS)
 
 clean: 
 	rm -f *.o
