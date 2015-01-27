@@ -14,10 +14,16 @@ DBFile::DBFile () {
 
 	
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
-    f.Open(0,f_path);
-    f.AddPage (&p, 0);
-    curpage = 0;
-    totalpages = 1;
+    try{
+	    f.Open(0,f_path);
+	    f.AddPage (&p, 0);
+	    curpage = 0;
+	    totalpages = 1;
+	    return 1;
+    }
+    catch(...){
+    	return 0;
+    }
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
