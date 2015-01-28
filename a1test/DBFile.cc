@@ -27,16 +27,26 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
-	p.EmptyItOut();
-	f.Open(1,loadpath);
-	f.GetPage(&p,0);
-	curpage = 0;
-    totalpages = f.GetLength();
+    FILE *tableFile = fopen (loadpath, "r");
+    Record temp;
+    int counter = 0;
+    while (temp.SuckNextRecord (&f_schema, tableFile ) == 1) {
+		counter++;
+		if (counter % 10000 == 0) {
+			cerr << counter << "\n";
+		}
+		Add(temp);
+    }
+
 }
 
 int DBFile::Open (char *f_path) {
 	try{
+		p.EmptyItOut();
 		f.Open(1,f_path);
+		f.GetPage(&p,0);
+		curpage = 0;
+		totalpages = f.GetLength();
 		return 1;
 	}
 	catch(...){

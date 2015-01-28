@@ -6,7 +6,7 @@ ifdef linux
 tag = -n
 endif
 
-all: main gtesting
+all: main gtesting test.out
 
 test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o
 	$(CC) -o test.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o -lfl
