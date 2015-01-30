@@ -4,7 +4,7 @@
 
 // make sure that the file path/dir information below is correct
 char *dbfile_dir = ""; // dir where binary heap files should be stored
-char *tpch_dir ="/home/suresh/dbi/a1test/DATA/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
+char *tpch_dir ="../DATA/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
 char *catalog_path = "catalog"; // full path of the catalog file
 
 using namespace std;
@@ -38,7 +38,7 @@ void test2 () {
 	int counter = 0;
 	while (dbfile.GetNext (temp) == 1) {
 		counter += 1;
-		temp.Print (rel->schema());
+		// temp.Print (rel->schema());
 		if (counter % 10000 == 0) {
 			cout << counter << "\n";
 		}

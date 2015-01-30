@@ -1,8 +1,8 @@
 
 #include <iostream>
 #include "Record.h"
+#include "DBFile.h"
 #include <stdlib.h>
-
 using namespace std;
 
 extern "C" {
@@ -32,7 +32,7 @@ int main () {
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("../DATA/10M/lineitem.tbl", "r");
+        FILE *tableFile = fopen ("../DATA/1G/lineitem.tbl", "r");
 
         Record temp;
         Schema mySchema ("catalog", "lineitem");
@@ -44,20 +44,63 @@ int main () {
         // read in all of the records from the text file and see if they match
 	// the CNF expression that was typed in
 	int counter = 0;
-	int recs = 0;
+	// Page sample;
+	DBFile result;
+    char* fname;
+    fname = "./results.txt";
+    result.Create(fname,heap,NULL);
 	ComparisonEngine comp;
         while (temp.SuckNextRecord (&mySchema, tableFile) == 1) {
 		counter++;
 		if (counter % 10000 == 0) {
 			cerr << counter << "\n";
 		}
-
-		if (comp.Compare (&temp, &literal, &myComparison))
-                	{temp.Print (&mySchema);
-                	recs ++;}
+		result.Add(temp);
+		// sample.Append(&temp);
+		// break;
+		// if (comp.Compare (&temp, &literal, &myComparison))
+  //               	temp.Print (&mySchema);
 
         }
-        cout << recs << " check " << counter << endl;
+
+
+  
+
+    // result.AddPage (&sample, result.GetLength());
+    // result.Close();
+  	result.Close();
+
+  	cout << "check" << endl;
+  	DBFile check;
+  	Record rec;
+  	check.Load(mySchema,fname);
+  	cout << "check" << endl;
+	check.MoveFirst();
+	cout << "check" << endl;
+	// int i=0;
+	while(check.GetNext(rec, myComparison ,literal)){
+		rec.Print (&mySchema);
+		// i++;
+	}
+
+	check.Close();
+  	// checking
+    // Page dats;
+    // File r;
+    // Record stat;
+    // r.Open(1,fname);
+    // cout << r.GetLength() << endl;
+    // r.GetPage(&dats,0);
+
+
+    // for(int i=0;i<5;i++){
+	    
+    // 	dats.GetFirst(&stat);
+    // 	cout << "record: " << i << endl;
+    // 	stat.Print (&mySchema);
+    // }
+
+    // r.Close();
 
 }
 

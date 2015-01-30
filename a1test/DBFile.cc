@@ -18,6 +18,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	    f.Open(0,f_path);
 	    f.AddPage (&p, 0);
 	    curpage = 0;
+	    status = w;
 	    totalpages = 1;
 	    return 1;
     }
@@ -46,6 +47,7 @@ int DBFile::Open (char *f_path) {
 		f.Open(1,f_path);
 		f.GetPage(&p,0);
 		curpage = 0;
+		status = r;
 		totalpages = f.GetLength();
 		return 1;
 	}
@@ -61,16 +63,24 @@ void DBFile::MoveFirst () {
 }
 
 int DBFile::Close () {
-	cout << f.GetLength() << "\n" ;
+	// cout << f.GetLength() << "\n" ;
 	try{
-		f.AddPage(&p, curpage);
-		p.EmptyItOut();
-		f.Close();
-		return 1;
+		if(status == w){
+			f.AddPage(&p, curpage);
+			p.EmptyItOut();
+			f.Close();
+			return 1;	
+		}
+		else{
+			p.EmptyItOut();
+			f.Close();
+			return 1;
+		}
 	}
 	catch(...){
 		return 0;
 	}
+
 
 }
 
@@ -97,7 +107,9 @@ int DBFile::GetNext (Record &fetchme) {
 		if(curpage < totalpages - 2){
 			curpage++;
 			f.GetPage(&p,curpage);
-			return 1;
+			if(p.GetFirst(&fetchme)){
+				return 1;
+			}
 		}
 		return 0;
 	}
@@ -106,10 +118,13 @@ int DBFile::GetNext (Record &fetchme) {
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	ComparisonEngine comp;
+	// cout << f.GetLength() << endl;
 	while(GetNext(fetchme)){
+		// cout << "status" << endl;
 		if (comp.Compare (&fetchme, &literal, &cnf)){
 			return 1;
 		}	
 	}
+	cout << "end" << endl;
 	return 0;	
 }
