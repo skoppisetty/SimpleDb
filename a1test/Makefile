@@ -1,5 +1,5 @@
-CC = g++ -O2 -Wno-deprecated 
-LDFLAGS := -pthread -lgtest -lgtest_main -L/usr/lib
+CC = g++ -O2 -g -Wno-deprecated 
+LDFLAGS := -pthread -lgtest -lgmock -lgtest_main -L/usr/lib
 tag = -i
 
 ifdef linux

@@ -54,28 +54,28 @@ private:
 public:
 
 	File ();
-	~File ();
+	virtual ~File ();
 
 	// returns the current length of the file, in pages
-	off_t GetLength ();
+	virtual off_t GetLength ();
 
 	// opens the given file; the first parameter tells whether or not to
 	// create the file.  If the parameter is zero, a new file is created
 	// the file; if notNew is zero, then the file is created and any other
 	// file located at that location is erased.  Otherwise, the file is
 	// simply opened
-	void Open (int length, char *fName);
+	virtual void Open (int length, char *fName);
 
 	// allows someone to explicitly get a specified page from the file
-	void GetPage (Page *putItHere, off_t whichPage);
+	virtual void GetPage (Page *putItHere, off_t whichPage);
 
 	// allows someone to explicitly write a specified page to the file
 	// if the write is past the end of the file, all of the new pages that
 	// are before the page to be written are zeroed out
-	void AddPage (Page *addMe, off_t whichPage);
+	virtual void AddPage (Page *addMe, off_t whichPage);
 
 	// closes the file and returns the file length (in number of pages)
-	int Close ();
+	virtual int Close ();
 
 };
 

@@ -12,13 +12,15 @@
 DBFile::DBFile () {
 }
 
+DBFile::~DBFile () {
+}
 	
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
     try{
 	    f.Open(0,f_path);
 	    f.AddPage (&p, 0);
 	    curpage = 0;
-	    status = w;
+	    // status = DBFILE_W;
 	    totalpages = 1;
 	    return 1;
     }
@@ -33,12 +35,13 @@ void DBFile::Load (Schema &f_schema, char *loadpath) {
     int counter = 0;
     while (temp.SuckNextRecord (&f_schema, tableFile ) == 1) {
 		counter++;
-		if (counter % 10000 == 0) {
-			cerr << counter << "\n";
-		}
+		// if (counter % 10000 == 0) {
+		// 	cerr << counter << "\n";
+		// }
 		Add(temp);
     }
-
+    cout << "Number of records loaded: " << counter << endl;
+    f.AddPage(&p, curpage);
 }
 
 int DBFile::Open (char *f_path) {
@@ -47,7 +50,7 @@ int DBFile::Open (char *f_path) {
 		f.Open(1,f_path);
 		f.GetPage(&p,0);
 		curpage = 0;
-		status = r;
+		// status = DBFILE_R;
 		totalpages = f.GetLength();
 		return 1;
 	}
@@ -65,17 +68,9 @@ void DBFile::MoveFirst () {
 int DBFile::Close () {
 	// cout << f.GetLength() << "\n" ;
 	try{
-		if(status == w){
-			f.AddPage(&p, curpage);
-			p.EmptyItOut();
-			f.Close();
-			return 1;	
-		}
-		else{
-			p.EmptyItOut();
-			f.Close();
-			return 1;
-		}
+		p.EmptyItOut();
+		f.Close();
+		return 1;
 	}
 	catch(...){
 		return 0;
@@ -94,7 +89,7 @@ void DBFile::Add (Record &rec) {
 		curpage++;totalpages++;
 		p.Append(&rec);
 	}
-	// cout << "Done" << "\n";
+	cout << "Add" << "\n";
 }
 
 int DBFile::GetNext (Record &fetchme) {
