@@ -1,3 +1,5 @@
+/a1test/*.bin
+/a1test/cpp/*
 /a1test/results.txt
 /data.tar
 /DATA/*
