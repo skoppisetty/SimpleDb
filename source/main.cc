@@ -21,7 +21,7 @@ int main () {
 	}
 
 	// suck up the schema from the file
-	Schema lineitem ("catalog", "lineitem");
+	Schema lineitem ("../source/catalog", "part");
 
 	// grow the CNF expression from the parse tree 
 	CNF myComparison;
@@ -32,10 +32,10 @@ int main () {
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("../DATA/10M/lineitem.tbl", "r");
+        FILE *tableFile = fopen ("../DATA/10M/part.tbl", "r");
 
         Record temp;
-        Schema mySchema ("catalog", "lineitem");
+        Schema mySchema ("../source/catalog", "part");
 
 	//char *bits = literal.GetBits ();
 	//cout << " numbytes in rec " << ((int *) bits)[0] << endl;

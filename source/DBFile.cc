@@ -14,13 +14,34 @@ DBFile::DBFile () {
 
 DBFile::~DBFile () {
 }
-	
+
+void DBFile::Switchmode(mode change){
+	if(status == change){
+		return;
+	}
+	else{
+		if(change == DBFILE_R){
+			f.AddPage(&p, curpage);
+			status = DBFILE_R;
+			return;
+		}
+		else{
+			p.EmptyItOut();
+			// cout << f.GetLength()-2 << endl;
+			curpage = f.GetLength()-2;
+			f.GetPage(&p,curpage);
+			// cout << p.numRecs << endl;
+			status = DBFILE_W;
+			return;
+		}
+	}
+}	
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
     try{
 	    f.Open(0,f_path);
 	    f.AddPage (&p, 0);
 	    curpage = 0;
-	    // status = DBFILE_W;
+	    status = DBFILE_W;
 	    totalpages = 1;
 	    return 1;
     }
@@ -40,18 +61,19 @@ void DBFile::Load (Schema &f_schema, char *loadpath) {
 		// }
 		Add(temp);
     }
-    cout << "Number of records loaded: " << counter << endl;
-    f.AddPage(&p, curpage);
+    // cout << curpage << endl;
+    // cout << p.numRecs << endl;
+    // cout << "Number of records loaded: " << counter << endl;
+    
 }
 
 int DBFile::Open (char *f_path) {
 	try{
 		p.EmptyItOut();
 		f.Open(1,f_path);
-		f.GetPage(&p,0);
-		curpage = 0;
-		// status = DBFILE_R;
+		status = DBFILE_R;
 		totalpages = f.GetLength();
+		MoveFirst();
 		return 1;
 	}
 	catch(...){
@@ -61,16 +83,20 @@ int DBFile::Open (char *f_path) {
 }
 
 void DBFile::MoveFirst () {
+	Switchmode(DBFILE_R);
 	p.EmptyItOut();
-	f.GetPage(&p,0);
+	curpage = 0;
+	f.GetPage(&p,curpage);
+	
 }
 
 int DBFile::Close () {
 	// cout << f.GetLength() << "\n" ;
 	try{
-		p.EmptyItOut();
-		f.Close();
-		return 1;
+			Switchmode(DBFILE_R);
+			p.EmptyItOut();
+			f.Close();
+			return 1;	
 	}
 	catch(...){
 		return 0;
@@ -82,6 +108,7 @@ int DBFile::Close () {
 void DBFile::Add (Record &rec) {
 	// Schema mySchema ("catalog", "region");p.Append(&rec)
 	// rec.Print (&mySchema);
+	Switchmode(DBFILE_W);
 	if(!p.Append(&rec)){
 		// cout << "new page" << "\n";
 		f.AddPage(&p, curpage);
@@ -89,11 +116,12 @@ void DBFile::Add (Record &rec) {
 		curpage++;totalpages++;
 		p.Append(&rec);
 	}
-	cout << "Add" << "\n";
+	// cout << "Add" << "\n";
 }
 
 int DBFile::GetNext (Record &fetchme) {
 	//cout << curpage << endl;
+	Switchmode(DBFILE_R);
 	if(p.GetFirst(&fetchme)){
 		return 1;
 	}
@@ -102,7 +130,7 @@ int DBFile::GetNext (Record &fetchme) {
 		if(curpage < totalpages - 2){
 			curpage++;
 			f.GetPage(&p,curpage);
-			if(p.GetFirst(&fetchme)){
+			if(GetNext(fetchme)){
 				return 1;
 			}
 		}
@@ -113,6 +141,7 @@ int DBFile::GetNext (Record &fetchme) {
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	ComparisonEngine comp;
+	Switchmode(DBFILE_R);
 	// cout << f.GetLength() << endl;
 	while(GetNext(fetchme)){
 		// cout << "status" << endl;
@@ -120,6 +149,6 @@ int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 			return 1;
 		}	
 	}
-	cout << "end" << endl;
+	// cout << "end" << endl;
 	return 0;	
 }

@@ -11,7 +11,7 @@
 
 typedef enum {heap, sorted, tree} fType;
 
-// typedef enum {DBFILE_R, DBFILE_W} mode;
+typedef enum {DBFILE_R, DBFILE_W} mode;
 
 // stub DBFile header..replace it with your own DBFile.h 
 
@@ -20,8 +20,9 @@ private:
 	File f;
 	Page p;
 	int curpage;
-	// mode status;
+	mode status;
 	int totalpages;
+	void Switchmode(mode);
 
 public:
 	DBFile (); 
