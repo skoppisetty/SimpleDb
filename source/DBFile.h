@@ -7,7 +7,6 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
-#include "gmock/gmock.h"
 
 typedef enum {heap, sorted, tree} fType;
 
