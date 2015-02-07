@@ -1,7 +1,2 @@
-/a1test/*.bin
-/a1test/cpp/*
-/a1test/results.txt
-/data.tar
+/bin/*
 /DATA/*
-/a1test/*.o
-/a1test/main

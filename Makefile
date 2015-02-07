@@ -66,3 +66,4 @@ clean:
 	rm -f $(BIN)lex.yy.c
 	rm -f $(BIN)y.tab.h
 	rm -f $(BIN)*.bin
+	rm -f $(BIN)main $(BIN)test
