@@ -1,5 +1,5 @@
 CC = g++ -O2 -g -Wno-deprecated 
-LDFLAGS := -pthread -lgtest -lgmock -lgtest_main -L./
+LDFLAGS := -pthread -L./
 tag = -i
 
 BIN=./bin/
