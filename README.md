@@ -6,6 +6,7 @@ Assignment 1 Implementation of Heap DBFile (Spring 2015 DBI)
 TEAM:
 =========
 Sharath Chandra Darsha 	 UFID: 45194064
+
 Suresh Koppisetty	 UFID: 18111766	
 
 Important Note:
@@ -23,12 +24,14 @@ Folder Structure:
 
 Steps to compile:
 =========
-1. make clean				// Clean any previously compiled code
+starting from the root folder
+
+1. make clean				// Clean any previously compiled code 
 2. make all				// Compile all the files necessary  
 3. cd bin
 4. ./gtesting.o < 1.txt 		// if you wanna pass the CNF query automatically (tests only for lineitem table)
    .gtesting.o 				// tests the written code for creat,load,open,movefirst,getnext and getnext with cnf and various other 						test cases using googletest framework and google mock.
-5. ./test.out  				// run this if you want to test the code with other tables.
+5. ./test  				// run this if you want to test the code with other tables.
 
 Executable Files:
 =========
@@ -41,7 +44,7 @@ Executable Files:
 			6. We scan the database to check for the updated new record (total records should be 60175 + 1 (i.e 60176))
 			7. We also check the cnf filter results, which should return 30 rows for lineitem table.
 
-2. test.out - Given test script to run the code(load, scan and scan with filter(CNF should be provided)) for various database tables.
+2. test - Given test script to run the code(load, scan and scan with filter(CNF should be provided)) for various database tables.
 3. main - given starting version of main.o - reads the records from lineitem.tbl and prints the records matching the CNF.
 
 Settings:
