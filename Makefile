@@ -11,7 +11,7 @@ endif
 
 # make all
 # generates main gtesting.o and test scripts
-all: main gtesting.o test
+all: main test
 
 # make test
 # generates only the test script - please do make all
