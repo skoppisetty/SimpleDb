@@ -1,4 +1,4 @@
-CC = g++ -O2 -g -Wno-deprecated 
+CC = g++ -O2 -g -Wno-deprecated -Wno-write-strings 
 LDFLAGS := -pthread -L./
 tag = -i
 
@@ -56,14 +56,14 @@ all: main gtesting.o test
 
 # make test
 # generates only the test script - please do make all
-test: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o test.o 
-	$(CC) -o $(BIN)test $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)DBFile.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test.o -lfl
+test: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o DBFile.o y.tab.o lex.yy.o test.o 
+	$(CC) -o $(BIN)test $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o  $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)DBFile.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test.o -lfl $(LDFLAGS)
 	
-main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o DBFile.o main.o
-	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)DBFile.o $(BIN)main.o -lfl
+main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o main.o
+	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)DBFile.o $(BIN)main.o -lfl $(LDFLAGS)
 	
 test.o: $(SOURCE)test.cc
-	$(CC) -g -c  $< -o $(BIN)$@
+	$(CC) -g -c  $< -o $(BIN)$@ $(LDFLAGS)
 
 main.o: $(SOURCE)main.cc
 	$(CC) -g -c  $< -o $(BIN)$@
@@ -82,6 +82,12 @@ File.o: $(SOURCE)File.cc
 
 Record.o: $(SOURCE)Record.cc
 	$(CC) -g -c  $< -o $(BIN)$@
+
+Pipe.o: $(SOURCE)Pipe.cc
+	$(CC) -g -c  $< -o $(BIN)$@ $(LDFLAGS)
+
+BigQ.o: $(SOURCE)BigQ.cc
+	$(CC) -g -c  $< -o $(BIN)$@ $(LDFLAGS)
 
 Schema.o: $(SOURCE)Schema.cc
 	$(CC) -g -c  $< -o $(BIN)$@
