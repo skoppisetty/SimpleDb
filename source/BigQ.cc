@@ -7,21 +7,24 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
  	// into the out pipe
 
     // finally shut down the out pipe
-
+	sortorder.Print();
+	
 	Record rec[2];
 	Record *last = NULL, *prev = NULL;
 	ComparisonEngine ceng;
 	int err = 0;
 	int i = 0;
-
+	Schema lineitem ("../source/catalog", "region");
 	while (in.Remove (&rec[i%2])) {
 		prev = last;
 		last = &rec[i%2];
 
 		if (prev && last) {
-			// if (ceng.Compare (prev, last, t->sortorder) == 1) {
-			// 	err++;
-			// }
+			cout << "Compare : " << ceng.Compare (prev, last, &sortorder) << endl;
+			if (ceng.Compare (prev, last, &sortorder) == 1) {
+				err++;
+			}
+			// cout << sortorder.numAtts << endl;
 			out.Insert (prev);
 		}
 
@@ -30,7 +33,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	out.Insert (last);
 
 	cout << " BigQ: removed " << i << " recs from the pipe\n";
-	cerr << " BigQ: " << (i - err) << " recs out of " << i << " recs in sorted order \n";
+	cerr << " BigQ: " << err << " recs out of " << i << " recs in sorted order \n";
 	if (err) {
 		cerr << " BigQ: " <<  err << " recs failed sorted order test \n" << endl;
 	}
