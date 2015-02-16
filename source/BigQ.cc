@@ -1,4 +1,52 @@
 #include "BigQ.h"
+#include "TwoWayList.cc"
+
+void BigQ:: insert_at_offset(Record * record, int offset, int rec_size){
+	p.curSizeInBytes += rec_size;
+	p.myRecs->MoveToStart();
+	while(offset > 0){
+		p.myRecs->Advance();
+		offset--;
+	}
+	p.myRecs->Insert(record);
+	p.numRecs++;
+}
+
+
+void  BigQ :: Sorted_insert(Record & record,int start, int end, OrderMaker &sortorder,int rec_size){
+	ComparisonEngine ceng; 
+	int comp =0;
+	while (start < end)
+	  {
+	  	// cout << start << " " << p.numRecs << " " << end <<  endl;
+	    int mid = start + (end-start)/2;
+	    p.myRecs->MoveToStart();
+	 	comp = ceng.Compare(p.myRecs->Current(mid),&record,&sortorder);
+	    if(comp == 0){
+	    	insert_at_offset(&record,mid,rec_size);
+			return;
+	    }
+	    if(comp == -1) {
+	    	start = mid + 1; 
+	 	}
+	    else {
+	    	end = mid - 1;
+	  	}
+	}
+	if(ceng.Compare(p.myRecs->Current(start),&record,&sortorder) == 1){
+		insert_at_offset(&record,start,rec_size);
+		// cout << "inserting at " << start << endl;
+	}
+	else{
+		insert_at_offset(&record,start+1,rec_size);
+		// cout << "inserting at " << start+1 << endl;
+	}
+	// cout << "Start : " << start << " End: "<< end << endl;
+	
+	
+	
+}
+
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	// read data from in pipe sort them into runlen pages
@@ -8,38 +56,32 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 
     // finally shut down the out pipe
 	sortorder.Print();
-	
-	Record rec[2];
-	Record *last = NULL, *prev = NULL;
-	ComparisonEngine ceng;
-	int err = 0;
-	int i = 0;
-	Schema lineitem ("../source/catalog", "region");
-	while (in.Remove (&rec[i%2])) {
-		prev = last;
-		last = &rec[i%2];
-
-		if (prev && last) {
-			cout << "Compare : " << ceng.Compare (prev, last, &sortorder) << endl;
-			if (ceng.Compare (prev, last, &sortorder) == 1) {
-				err++;
-			}
-			// cout << sortorder.numAtts << endl;
-			out.Insert (prev);
+	sortorder = sortorder;
+	Record curr;
+	while (in.Remove (&curr)) {
+		if(p.numRecs == 0){
+			p.Append(&curr);
 		}
-
-		i++;
+		else{
+			char *b = curr.GetBits();
+			int rec_size = ((int *) b)[0];
+			// first see if we can fit the record
+			if (p.curSizeInBytes + rec_size > PAGE_SIZE) {
+				// code to add new page
+				f.AddPage(&p,curpage);
+				p.EmptyItOut();
+				curpage++;
+			}
+			else{
+				Sorted_insert(curr,0,p.numRecs-1,sortorder,rec_size);
+			}
+		}
 	}
-	out.Insert (last);
-
-	cout << " BigQ: removed " << i << " recs from the pipe\n";
-	cerr << " BigQ: " << err << " recs out of " << i << " recs in sorted order \n";
-	if (err) {
-		cerr << " BigQ: " <<  err << " recs failed sorted order test \n" << endl;
+	Record temp;
+	p.myRecs->MoveToStart();
+	while(p.GetFirst(&temp) == 1){
+		out.Insert(&temp);
 	}
-
-
-
 	out.ShutDown ();
 }
 

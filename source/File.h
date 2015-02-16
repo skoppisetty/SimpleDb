@@ -8,10 +8,12 @@
 #include "ComparisonEngine.h"
 
 class Record;
+class BigQ;
 
 using namespace std;
 
 class Page {
+	friend BigQ;
 private:
 	TwoWayList <Record> *myRecs;
 	
