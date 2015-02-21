@@ -1,52 +1,76 @@
 #include "BigQ.h"
-#include "TwoWayList.cc"
 
-void BigQ:: insert_at_offset(Record * record, int offset, int rec_size){
-	p.curSizeInBytes += rec_size;
-	p.myRecs->MoveToStart();
-	while(offset > 0){
-		p.myRecs->Advance();
-		offset--;
+OrderMaker G_sortorder;
+ComparisonEngine G_comp;
+
+class Compare{
+	public:
+	bool operator()(Record * R1, Record *R2)
+	{
+	    if((G_comp).Compare(R1,R2,&(G_sortorder)) == -1){
+	    	return true;
+	    }
+	    else{
+	    	return false;
+	    }
 	}
-	p.myRecs->Insert(record);
-	p.numRecs++;
+}mysorter;
+
+int BigQ::Create () {
+    try{
+    	char tbl_path[100]; // construct path of the tpch flat text file
+		sprintf (tbl_path, "bigq.sbin"); 
+	    f.Open(0,tbl_path);
+	    curpage = 0;
+	    totalpages = 1;
+	    return 1;
+    }
+    catch(...){
+    	return 0;
+    }
 }
 
-
-void  BigQ :: Sorted_insert(Record & record,int start, int end, OrderMaker &sortorder,int rec_size){
-	ComparisonEngine ceng; 
-	int comp =0;
-	while (start < end)
-	  {
-	  	// cout << start << " " << p.numRecs << " " << end <<  endl;
-	    int mid = start + (end-start)/2;
-	    p.myRecs->MoveToStart();
-	 	comp = ceng.Compare(p.myRecs->Current(mid),&record,&sortorder);
-	    if(comp == 0){
-	    	insert_at_offset(&record,mid,rec_size);
-			return;
-	    }
-	    if(comp == -1) {
-	    	start = mid + 1; 
-	 	}
-	    else {
-	    	end = mid - 1;
-	  	}
-	}
-	if(ceng.Compare(p.myRecs->Current(start),&record,&sortorder) == 1){
-		insert_at_offset(&record,start,rec_size);
-		// cout << "inserting at " << start << endl;
+int BigQ::GetNext (Record &fetchme) {
+	if(p.GetFirst(&fetchme)){
+		return 1;
 	}
 	else{
-		insert_at_offset(&record,start+1,rec_size);
-		// cout << "inserting at " << start+1 << endl;
+		//cout << "pagechange" << curpage << " " << totalpages << endl;
+		if(curpage < totalpages - 2){
+			curpage++;
+			f.GetPage(&p,curpage);
+			if(GetNext(fetchme)){
+				return 1;
+			}
+		}
+		return 0;
 	}
-	// cout << "Start : " << start << " End: "<< end << endl;
-	
-	
 	
 }
 
+
+int BigQ::savelist (vector<Record *> v) {
+	sort(v.begin(),v.end(),mysorter);
+	int count = 1;
+	for(int i = 0;i < v.size();i++){
+		Record * rec = v[i];
+		if(!p.Append(rec)){
+			if((count)%(runlength+1) != 0){
+				f.AddPage(&p, curpage);
+				p.EmptyItOut();
+				curpage++;totalpages++;
+				count++;
+				p.Append(rec);
+			}
+			else{
+				cout << "Error" << endl;
+				return 0;
+			}
+		}
+	}
+	
+	return 1;
+}
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	// read data from in pipe sort them into runlen pages
@@ -55,35 +79,137 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
  	// into the out pipe
 
     // finally shut down the out pipe
-	sortorder.Print();
-	sortorder = sortorder;
-	Record curr;
-	while (in.Remove (&curr)) {
-		if(p.numRecs == 0){
-			p.Append(&curr);
-		}
-		else{
-			char *b = curr.GetBits();
+	G_sortorder = sortorder;
+	runlength = runlen;
+	cout << Create() << endl;
+	vector<Record *> v;
+	int curSizeInBytes = 0;
+	// priority_queue <Record*, vector<Record*>, Compare> pq;
+	while (true) {
+		Record * curr = new Record();
+		if(in.Remove(curr)){
+			// out.Insert(curr);
+			char *b = curr->GetBits();
 			int rec_size = ((int *) b)[0];
-			// first see if we can fit the record
-			if (p.curSizeInBytes + rec_size > PAGE_SIZE) {
-				// code to add new page
-				f.AddPage(&p,curpage);
-				p.EmptyItOut();
-				curpage++;
+			if (curSizeInBytes + rec_size < (PAGE_SIZE)*runlen) {
+				curSizeInBytes += rec_size;
+				// pq.push(curr);
+				v.push_back(curr);
 			}
 			else{
-				Sorted_insert(curr,0,p.numRecs-1,sortorder,rec_size);
+				if(!savelist(v)){
+					cout << "overflowww";
+				}
+				v.clear();
+				v.push_back(curr);
+				curSizeInBytes = rec_size;
+				
 			}
 		}
+		else{
+			break;
+		}
+		
 	}
+	if(!savelist(v)){
+		cout << "overflowww";
+	}
+	v.clear();
+
+	v.clear();
+	f.AddPage(&p, curpage);
+	totalpages++;
+
+
+	curpage = 0;
+	p.EmptyItOut();
+
+	f.GetPage(&p,curpage);
 	Record temp;
-	p.myRecs->MoveToStart();
-	while(p.GetFirst(&temp) == 1){
+	while(GetNext(temp) == 1){
 		out.Insert(&temp);
 	}
+
+
+	
+	// while (!pq.empty())
+	//   {	 
+	  	 
+	//   	 temp = pq.top();
+	//   	 pq.pop();
+	//      out.Insert(temp);
+	//   }
+
 	out.ShutDown ();
 }
 
 BigQ::~BigQ () {
 }
+
+
+
+
+
+// BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
+// 	// read data from in pipe sort them into runlen pages
+
+//     // construct priority queue over sorted runs and dump sorted data 
+//  	// into the out pipe
+
+//     // finally shut down the out pipe
+// 	sortorder.Print();
+// 	G_sortorder = sortorder;
+// 	Record curr;
+// 	Record temp;
+// 	priority_queue <Record, vector<Record>, Compare> pq;
+// 	while (in.Remove(&curr)) {
+// 		temp = curr;
+// 		//char *b = curr.GetBits();
+// 		//int rec_size = ((int *) b)[0];
+// 		// temp = curr;
+// 		//if (curSizeInBytes + rec_size < (PAGE_SIZE)*runlen) {
+// 		pq.push(temp);
+// 		//	curSizeInBytes += rec_size;
+// 		//}
+// 		//else{
+
+// 		//}
+
+// 	}
+// 	// 	if(p.numRecs == 0){
+// 	// 		p.Append(&curr);
+// 	// 	}
+// 	// 	else{
+// 	// 		char *b = curr.GetBits();
+// 	// 		int rec_size = ((int *) b)[0];
+// 	// 		// first see if we can fit the record
+// 	// 		if (p.curSizeInBytes + rec_size > PAGE_SIZE) {
+// 	// 			// code to add new page
+// 	// 			f.AddPage(&p,curpage);
+// 	// 			p.EmptyItOut();
+// 	// 			curpage++;
+// 	// 		}
+// 	// 		else{
+// 	// 			Sorted_insert(curr,0,p.numRecs-1,sortorder,rec_size);
+// 	// 		}
+// 	// 	}
+// 	// }
+// 	// Record temp;
+// 	// int i = 0;
+// 	// while (i<3)
+// 	//   {	 
+	  	 
+// 	//   	 temp = pq.top();
+// 	//   	 //pq.pop();
+// 	//      out.Insert(&temp);
+// 	//      i++;
+// 	//   }
+// 	// p.myRecs->MoveToStart();
+// 	// while(p.GetFirst(&temp) == 1){
+// 	// 	out.Insert(&temp);
+// 	// }
+// 	out.ShutDown ();
+// }
+
+// BigQ::~BigQ () {
+// }
