@@ -11,6 +11,7 @@ class block
 public:
 	block(){
 		count = 0;
+		curpage = 0;
 	}
 	Record rec;
 	Page p;
@@ -45,18 +46,29 @@ public:
 	Page p;
 	int curpage;
 	int totalpages;
+	char * name;
 	block *first;
 	block *second;
 	merger_type mtype;
-	int loadpage(block *node){
-		if(node->curpage < (totalpages-1) && node->count > 0){
-			f.GetPage(&node->p,node->curpage);
-			node->count--;
+	int loadpage(int flag){
+		if(flag == 0){
+			if(first->curpage < (totalpages-1) && first->count > 0){
+			f.GetPage(&first->p,first->curpage);
+			first->count--;
 			return 1;
+			}
+			return 0;
+		} else {
+			if(second->curpage < (totalpages-1) && second->count > 0){
+			f.GetPage(&second->p,second->curpage);
+			second->count--;
+			return 1;
+			}
+			return 0;
 		}
-		return 0;
+		
 	}
-	int AddRec(Record &rec){
+	int AddRec(Record &rec,int max_page){
 		// cout << "add" << endl;
 		// rec.Print(&mySchema);
 		if(!p.Append(&rec)){
@@ -64,6 +76,9 @@ public:
 			f.AddPage(&p, curpage);
 			p.EmptyItOut();
 			curpage++;totalpages++;
+			if(curpage >= max_page-1){
+				cout << "overflow" << endl;
+			}
 			p.Append(&rec);
 		}
 	}
@@ -84,7 +99,10 @@ class Compare{
 
 int Create (char* s, merger *merge_file) {
     try{
+    	merge_file->name = s;
 	    merge_file->f.Open(0,s);
+	    merge_file->p.EmptyItOut();
+	    merge_file->f.AddPage(&merge_file->p,0);
 	    merge_file->curpage = 0;
 	    merge_file->totalpages = 1;
 	    return 1;
@@ -212,11 +230,16 @@ void *TPMMS (void *arg) {
 	second->curpage = G_runlen;
 	first_file->first = first;
 	first_file->second = second;
+	second_file->first = new block();
+	second_file->second = new block();
+	second_file->first->curpage = 0;
+	second_file->second->curpage = G_runlen;
 
 	int cur_runlength = G_runlen;
 	
 	merger * source_file = first_file;
 	merger * destination_file = second_file;
+	int max_page = 0;
 	cout << "Initial start" << endl;
 	while(block_state != merge_done){
 		switch(block_state){
@@ -228,28 +251,34 @@ void *TPMMS (void *arg) {
 				}
 				source_file->first->count = cur_runlength;
 				source_file->second->count = cur_runlength;
-				source_file->loadpage(first);
-				// if(!source_file->loadpage(second)){
-				// 	block_state = second_done;
-				// 	break;
-				// }
+				max_page = source_file->second->curpage + cur_runlength;
+				// cout << "Load page of first block" << endl;
+
+				source_file->loadpage(0);
+				// cout << "get record of first block" << endl;
 				if(!source_file->first->getRecord()){
 					source_file->first->curpage++;
-					if(!source_file->loadpage(first)){
-						block_state = first_done;
+					if(!source_file->loadpage(0)){
+						block_state = finish;
 						break;
 					}
 					else{
 						if(!source_file->first->getRecord()){
-							block_state = first_done;
+							block_state = finish;
 							break;
 						}
 					}
 				}
+				// cout << "Load page of second block" << endl;
+				if(!source_file->loadpage(1)){
+					block_state = second_done;
+					break;
+				}
+				// cout << "get record of second block" << endl;
 				// source_file->first->rec.Print(&mySchema);
 				if(!source_file->second->getRecord()){
 					source_file->second->curpage++;
-					if(!source_file->loadpage(second)){
+					if(!source_file->loadpage(1)){
 						block_state = second_done;
 						break;
 					}
@@ -265,12 +294,12 @@ void *TPMMS (void *arg) {
 			
 			case compare:
 				// cout << block_state << endl;
-				if((G_comp).Compare(&source_file->first->rec,&source_file->second->rec,&(G_sortorder)) == -1){
-					destination_file->AddRec(source_file->first->rec);
+				if((G_comp).Compare(&source_file->first->rec,&source_file->second->rec,&(G_sortorder)) != 1){
+					destination_file->AddRec(source_file->first->rec,max_page);
 					block_state = read_first;
 				}
 				else{
-					destination_file->AddRec(source_file->second->rec);
+					destination_file->AddRec(source_file->second->rec,max_page);
 					block_state = read_second;
 				}
 				break;
@@ -279,7 +308,7 @@ void *TPMMS (void *arg) {
 				// cout << block_state << endl;
 				if(!source_file->first->getRecord()){
 					source_file->first->curpage++;
-					if(!source_file->loadpage(first)){
+					if(!source_file->loadpage(0)){
 						block_state = first_done;
 						break;
 					}
@@ -297,7 +326,7 @@ void *TPMMS (void *arg) {
 				// cout << block_state << endl;
 				if(!source_file->second->getRecord()){
 					source_file->second->curpage++;
-					if(!source_file->loadpage(second)){
+					if(!source_file->loadpage(1)){
 						block_state = second_done;
 						break;
 					}
@@ -312,11 +341,11 @@ void *TPMMS (void *arg) {
 				break;
 			
 			case first_done:
-				// cout << block_state << endl;
-				destination_file->AddRec(source_file->second->rec);
+				// cout << "first_done" << endl;
+				destination_file->AddRec(source_file->second->rec,max_page);
 				if(!source_file->second->getRecord()){
 					source_file->second->curpage++;
-					if(!source_file->loadpage(second)){
+					if(!source_file->loadpage(1)){
 						block_state = done;
 						break;
 					}
@@ -332,10 +361,10 @@ void *TPMMS (void *arg) {
 
 			case second_done:
 				// cout << "second_done" << endl;
-				destination_file->AddRec(source_file->first->rec);
+				destination_file->AddRec(source_file->first->rec,max_page);
 				if(!source_file->first->getRecord()){
 					source_file->first->curpage++;
-					if(!source_file->loadpage(first)){
+					if(!source_file->loadpage(0)){
 						block_state = done;
 						break;
 					}
@@ -346,8 +375,11 @@ void *TPMMS (void *arg) {
 						}
 					}
 				}
+				else{
+					block_state = second_done;
+					break;
+				}
 				// cout << "adding records" << endl;
-				block_state = second_done;
 				break;
 
 			case done:
@@ -357,32 +389,49 @@ void *TPMMS (void *arg) {
 					block_state = finish;
 					break;
 				}
-				source_file->first->curpage += cur_runlength;
-				source_file->second->curpage += cur_runlength;
-				block_state = initial;
+				else{
+					source_file->first->curpage += cur_runlength;
+					source_file->second->curpage += cur_runlength;
+					block_state = initial;	
+					break;
+				}
 				break;
 			
 			case finish:
-				// cout << "Finish" << endl;
-				// cout << cur_runlength << " " << source_file->first->curpage << " " << source_file->totalpages-2 << endl;
-				if(cur_runlength >= source_file->totalpages-2 ){
+				cout << "Finish" << endl;
+				cout << cur_runlength << " " << source_file->curpage << " " << source_file->totalpages-2 << endl;
+				if(cur_runlength/2 >= source_file->totalpages ){
 					block_state = merge_done;
 					destination_file->f.AddPage(&destination_file->p,destination_file->curpage);
 					destination_file->totalpages++;
+					destination_file->p.EmptyItOut();
+					source_file->p.EmptyItOut();
 					break;
 				}
 				else{
 					destination_file->f.AddPage(&destination_file->p,destination_file->curpage);
+					destination_file->p.EmptyItOut();
+					source_file->p.EmptyItOut();
 					destination_file->totalpages++;
+					cur_runlength = 2 * cur_runlength;
+					cout << cur_runlength << endl;
 					merger * temp = source_file;
 					source_file = destination_file;
 					destination_file = temp;
+					// char numberstring[(((sizeof cur_runlength) * CHAR_BIT) + 2)/3 + 2];
+					// char final_path[100];// construct path of the tpch flat text file
+					// sprintf (final_path, "sample.bin"); 
+					// strcat( numberstring, cur_runlength );
+					Create(destination_file->name, destination_file);
 					source_file->mtype = source;
 					source_file->curpage = 0;
 					destination_file->curpage = 0;
+					source_file->first->curpage = 0;
+					destination_file->totalpages = 1;
+					source_file->second->curpage = cur_runlength;
 					destination_file->mtype = destination;
-					cur_runlength = 2 * cur_runlength;
-					block_state = initial;					
+					block_state = initial;
+					break;					
 				}
 				break;
 
