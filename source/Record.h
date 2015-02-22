@@ -27,6 +27,7 @@ class Record {
 friend class ComparisonEngine;
 friend class Page;
 friend class BigQ;
+friend void * TPMMS(void *);
 
 private:
 	char *bits;

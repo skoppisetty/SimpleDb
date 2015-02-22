@@ -10,6 +10,10 @@
 #include "Record.h"
 
 using namespace std;
+typedef struct{
+	Pipe *in;
+	Pipe *out;
+}BigQ_input;
 
 class BigQ {
 	File f;
