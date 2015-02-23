@@ -16,12 +16,6 @@ typedef struct{
 }BigQ_input;
 
 class BigQ {
-	File f;
-	Page p;
-	int curpage;
-	int totalpages;
-	int runlength;
-	int curSizeInBytes;
 	int Create();
 	int savelist(vector<Record*>);
 	int GetNext(Record & );
