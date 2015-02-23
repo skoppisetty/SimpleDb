@@ -61,8 +61,9 @@ void *consumer (void *arg) {
 		if (prev && last) {
 			if (ceng.Compare (prev, last, t->order) == 1) {
 				err++;
-				// prev->Print (rel->schema ());
-				// last->Print (rel->schema ());
+				cout << i << endl;
+				prev->Print (rel->schema ());
+				last->Print (rel->schema ());
 			}
 			if (t->write) {
 				dbfile.Add (*prev);
