@@ -94,9 +94,9 @@ void *consumer (void *arg) {
 void test1 (int option, int runlen) {
 
 	// sort order for records
-	// OrderMaker sortorder;
-	OrderMaker * sortorder = new OrderMaker(r->schema());
-	// rel->get_sort_order(sortorder);
+	OrderMaker sortorder;
+	// OrderMaker * sortorder = new OrderMaker(r->schema());
+	rel->get_sort_order(sortorder);
 
 	int buffsz = 100; // pipe cache size
 	Pipe input (buffsz);
@@ -108,8 +108,8 @@ void test1 (int option, int runlen) {
 
 	// thread to read sorted data from output pipe (dumped by BigQ)
 	pthread_t thread2;
-	// testutil tutil = {&output, &sortorder, false, false};
-	testutil tutil = {&output, sortorder, false, false};
+	testutil tutil = {&output, &sortorder, false, false};
+	// testutil tutil = {&output, sortorder, false, false};
 	if (option == 2) {
 		tutil.print = true;
 	}
@@ -117,8 +117,8 @@ void test1 (int option, int runlen) {
 		tutil.write = true;
 	}
 	pthread_create (&thread2, NULL, consumer, (void *)&tutil);
-	BigQ bq (input, output, *sortorder, runlen);
-	// BigQ bq (input, output, sortorder, runlen);
+	// BigQ bq (input, output, *sortorder, runlen);
+	BigQ bq (input, output, sortorder, runlen);
 
 	pthread_join (thread1, NULL);
 	pthread_join (thread2, NULL);
