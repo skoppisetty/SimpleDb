@@ -13,7 +13,7 @@ class BigQ;
 using namespace std;
 
 class Page {
-	friend BigQ;
+	friend class BigQ;
 private:
 	TwoWayList <Record> *myRecs;
 	
