@@ -39,6 +39,10 @@ public:
 		curpage = 0;
 		totalpages = 1;
 	}
+	~merger(){
+		delete first;
+		delete second;
+	}
 	File f;
 	Page p;
 	int curpage;
@@ -590,6 +594,8 @@ void *TPMMS (void *arg) {
 
 	t->out->ShutDown();
 
+	delete first_file;
+	delete second_file;
 }
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
