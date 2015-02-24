@@ -1,1 +1,9 @@
+/DATA/1G/customer.tbl
+/DATA/1G/lineitem.tbl
+/DATA/1G/nation.tbl
+/DATA/1G/orders.tbl
+/DATA/1G/part.tbl
+/DATA/1G/partsupp.tbl
+/DATA/1G/region.tbl
+/DATA/1G/supplier.tbl
 /bin/*

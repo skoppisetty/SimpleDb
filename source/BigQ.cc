@@ -5,7 +5,7 @@ ComparisonEngine G_comp;
 static int G_runlen=0;
 static int G_curSizeInBytes = 0;
 
-Schema mySchema ("../source/catalog", "orders");
+// Schema mySchema ("../source/catalog", "orders");
 
 typedef enum {source, destination} merger_type;
 typedef enum {initial, merge_done, done, finish,  first_done , second_done , compare, read_first, read_second} merger_state;
@@ -69,19 +69,19 @@ public:
 	}
 	int AddRec(Record &rec,int max_page){
 		if(curpage >= max_page){
-			// rec.Print(&mySchema);
+			// Overflow when merging blocks
+			// Store to extra vector list and send them at the end
 			Record * curr = new Record();
 			curr->Consume(&rec);
-			// curr->Print(&mySchema);
 			excess.push_back(curr);
 		}
 		else{
 			if(!p.Append(&rec)){
 				if(curpage >= max_page-1){
-					// rec.Print(&mySchema);
 					Record * curr = new Record();
 					curr->Consume(&rec);
-					// curr->Print(&mySchema);
+					// Overflow when merging blocks
+					// Store to extra vector list and send them at the end
 					excess.push_back(curr);
 				}
 				else{
@@ -95,7 +95,7 @@ public:
 	}
 };
 
-
+// compare function for the vector sort.
 class Compare{
 	public:
 	bool operator()(Record * R1, Record *R2)
@@ -109,6 +109,7 @@ class Compare{
 	}
 }mysorter;
 
+// Initial creation of temp files
 int Create (char* s, merger *merge_file) {
     try{
     	merge_file->name = s;
@@ -140,6 +141,7 @@ int GetNext (Record &fetchme, merger *merge_file) {
 	
 }
 
+// helper function to send the file
 int SendAll(merger *merge_file, BigQ_input *t){
 	merge_file->curpage = 0;
 	merge_file->p.EmptyItOut();
@@ -150,6 +152,7 @@ int SendAll(merger *merge_file, BigQ_input *t){
 	}
 }
 
+// finally sending the sorted
 int SendSocket(merger *merge_file, BigQ_input *t){
 	merge_file->curpage = 0;
 	merge_file->p.EmptyItOut();
@@ -160,27 +163,25 @@ int SendSocket(merger *merge_file, BigQ_input *t){
 	while(GetNext(temp,merge_file) == 1){
 		while(val< excess.size()){
 			if(G_comp.Compare (&temp, excess[val], &(G_sortorder)) != 1){
-				// t->out->Insert(&temp);
 				break;
 			}
 			else{
-				// cout << "Send" << endl;
-				// excess[val]->Print(&mySchema);
+				//Sending overflowed record
 				t->out->Insert(excess[val]);
-				// excess[val]->Print(&mySchema);
 				val++;
 			}
 		}
+		// Sending record
 		t->out->Insert(&temp);
 	}
 	while(val<excess.size()){
-		// cout << "final" << endl;
-		// excess[val]->Print(&mySchema);
+		// Send the overflowed pending records
 		t->out->Insert(excess[val]);
 		val++;
 	}
 }
 
+// This is a helper function to check  the unsorted records after each merge
 int check_file(merger *merge_file, int runlen){
 	int entries = 0;
 	merge_file->curpage = 0;
@@ -200,6 +201,8 @@ int check_file(merger *merge_file, int runlen){
 		if (prevs && lasts) {
 			if (G_comp.Compare (prevs, lasts, &(G_sortorder)) == 1) {
 				errs++;
+				// Previous page and last page should be different 
+				// and last_page should be multiple of runlength
 				// cout << j << " " << prev_page << " " << last_page << endl;
 				// prevs->Print (&mySchema);
 				// lasts->Print (&mySchema);
@@ -247,6 +250,7 @@ int savelist (vector<Record *> v, merger *merge_file) {
 					added_file--;
 					overflow.push_back(v[i]);
 					saved = true;
+					// pushing overflow records
 				}
 			}
 		}
@@ -286,7 +290,8 @@ void *TPMMS (void *arg) {
 	Create(first_path,first_file);
 	sprintf (second_path, "Bigq_temp.bin"); 
 	Create(second_path,second_file);
-	
+	// Created two files for the two way merger sort
+
 	vector<Record *> v;
 
 	G_curSizeInBytes = 0;
@@ -313,7 +318,9 @@ void *TPMMS (void *arg) {
 			break;
 		}
 	}
+	// Each runlength records are sorted and added to the file
 
+	//Now adding the pending overflowed and last records 
 	// cout << "Total : " << vals + v.size() <<  endl;
 	vector <Record *> pending;
 	pending.reserve( v.size() + overflow.size() ); // preallocate memory
@@ -341,6 +348,7 @@ void *TPMMS (void *arg) {
 	v.clear();
 	overflow.clear();
 	pending.clear();
+	// clear the pending data as you have already added the records to the file
 
 	// cout << "Initial " << first_file->totalpages << " " << first_file->f.GetLength() << endl;
 	
@@ -350,7 +358,7 @@ void *TPMMS (void *arg) {
 	// exit(-1);
 
 
-	// TPMMS CODE
+	// TPMMS CODE to merge
 	first_file->mtype = source;
 	second_file->mtype = destination;
 	block *first = new block();
@@ -369,10 +377,10 @@ void *TPMMS (void *arg) {
 	merger * destination_file = second_file;
 	int max_page = 0;
 	// cout << "Initial start" << endl;
+	cout << "\nTPMMS Merge start\n" << endl;
 	while(block_state != merge_done){
 		switch(block_state){
 			case initial:
-				// cout << "Initial" << endl;
 				if(source_file->mtype != source){
 					cout << "Source type doesnt match" << endl;
 					exit(-1);
@@ -430,10 +438,7 @@ void *TPMMS (void *arg) {
 					block_state = read_first;
 				}
 				else{
-					// source_file->first->rec.Print(&mySchema);
-					// source_file->second->rec.Print(&mySchema);
-					// cout << "add second" << endl;
-					// exit(-1);
+					// Adding the second record
 					destination_file->AddRec(source_file->second->rec,max_page);
 					block_state = read_second;
 				}
@@ -542,7 +547,7 @@ void *TPMMS (void *arg) {
 				break;
 			
 			case finish:
-				// cout << "Finish" << endl;
+				// cout << "Merge done" << endl;
 				// cout << cur_runlength << " " << source_file->curpage << " " << source_file->totalpages-2 << endl;
 				destination_file->curpage++;
 				if(cur_runlength >= source_file->f.GetLength() ){
@@ -550,9 +555,14 @@ void *TPMMS (void *arg) {
 					break;
 				}
 				else{
+					// cout << "TPMMS Merge done using " << cur_runlength << endl;
 					cur_runlength = 2 * cur_runlength;
+					// cout << "TPMMS Merge Start with Runlen: " << cur_runlength << endl;
 					// cout << cur_runlength << endl;
 					// check_file(destination_file,cur_runlength/2);
+
+					// Phase Done
+					// Swap Source and Destination and again do TPMMS 
 					merger * temp = source_file;
 					source_file = destination_file;
 					destination_file = temp;
@@ -573,8 +583,9 @@ void *TPMMS (void *arg) {
 
 	}
 
-	// cout << "Its done finally " << destination_file->totalpages << endl;
-
+	cout << "TPMMS Merge done\n" << endl;
+	// cout << "Sending Records " << endl;
+	// Sending records
 	SendSocket(destination_file,t);
 
 	t->out->ShutDown();
