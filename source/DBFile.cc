@@ -25,8 +25,8 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	ofstream myfile;
 	cout << "open metadata dile, f_type = " << f_type << endl;
 	myfile.open(name);
-	myfile << f_type << endl;
-	// myfile.write ( (char *)(f_type), sizeof(f_type) );
+	// myfile << f_type << endl;
+	myfile.write ( (char *)(&f_type), sizeof(int) );
 	cout << "name = " << name << endl;
 
 	if(f_type == heap) {
@@ -34,7 +34,8 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 		//myfile << "heap" << endl;
 	} else {
 		startinfo t = *(startinfo*)startup;
-		myfile << t.l << endl;
+		// myfile << t.l << endl;
+		myfile.write ( (char *)(&(t.l)), sizeof(int) );
 		OrderMaker order = *(OrderMaker*)(t.o);
 		cout << "DBFile::Create() - " << endl;
 		order.Print();
@@ -58,7 +59,8 @@ int DBFile::Open (char *fpath){
 
 	ifstream myfile;
 	myfile.open(name);
-	myfile >> type;
+	// myfile >> type;
+	myfile.read ( (char *)&type, sizeof(int) );
 	cout << "DBFile::Open - " << type << endl;
 	if(type == 0){
 		myInternalVar = new HeapFile;

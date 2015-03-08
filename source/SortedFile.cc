@@ -59,8 +59,10 @@ void * consumer1 (void *arg) {
 	// t->f->Open(1,t->db_path);
     int curpage = 0;
     int counter = 0;
+    // Schema lineitem ("../source/catalog", "nation");
 	while (t->myPipe->Remove(&temp)) {
 		counter++;
+		// temp.Print(&lineitem);
 		// cout << "Remove record from BigQ pipe" << endl;
 		if (!p.Append(&temp)) { 
 			t->f->AddPage(&p, curpage);
@@ -87,7 +89,7 @@ void SortedFile::Merge(){
 	// thread to dump data into the input pipe (for BigQ's consumption)
 	pthread_t thread1;
 	Smode flag = merg;
-	loadinfo lutils_producer = {&output, runLen, &so , NULL, db_path, NULL, flag, &f};
+	loadinfo lutils_producer = {&input, runLen, &so , NULL, db_path, NULL, flag, &f};
 	pthread_create (&thread1, NULL, producer1, (void *)&lutils_producer);
 	
 	loadinfo lutils_consumer = {&output, runLen, &so , NULL, db_path, NULL, flag, &f};
@@ -191,10 +193,13 @@ int SortedFile::Open (char *f_path) {
 		ifstream myfile;
 		myfile.open(name);
 		int t;
-		myfile >> t;
+		myfile.read ( (char *)&t, sizeof(int) );
+		myfile.read ( (char *)&runLen, sizeof(int) );
+		myfile.read ( (char *)&so, sizeof(OrderMaker) );
+		// myfile >> t;
 		//fType dbfileType = (fType)t;
-		myfile >> runLen;
-		while( myfile.read ( (char *)&so, sizeof(OrderMaker) ) )
+		// myfile >> runLen;
+		// while( myfile.read ( (char *)&so, sizeof(OrderMaker) ) )
 		//myfile >> so; 
 		myfile.close();
 

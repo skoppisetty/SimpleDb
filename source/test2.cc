@@ -98,8 +98,8 @@ void test2 () {
 	int cnt = 0;
 	cerr << "\t";
 	while (dbfile.GetNext (temp) && ++cnt) {
-		temp.Print (rel->schema());
-		if (cnt % 10000) {
+		// temp.Print (rel->schema());
+		if (!(cnt % 10000)) {
 			cerr << ".";
 		}
 	}
@@ -122,7 +122,7 @@ void test3 () {
 	int cnt = 0;
 	cerr << "\t";
 	while (dbfile.GetNext (temp, cnf, literal) && ++cnt) {
-		// temp.Print (rel->schema());
+		temp.Print (rel->schema());
 		if (cnt % 10000 == 0) {
 			cerr << ".";
 		}
