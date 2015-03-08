@@ -52,17 +52,26 @@ gtest_main.o : $(FUSED_GTEST_H) $(GTEST_MAIN_CC)
 
 # make all
 # generates main gtesting.o and test scripts
-all: main gtesting.o test
+all: main gtesting.o test1 test2
 
 # make test
 # generates only the test script - please do make all
-test: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o DBFile.o y.tab.o lex.yy.o test.o 
-	$(CC) -o $(BIN)test $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o  $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)DBFile.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test.o -lfl $(LDFLAGS)
+test1: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o DBFile.o HeapFile.o SortedFile.o y.tab.o lex.yy.o test1.o 
+	$(CC) -o $(BIN)test1 $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o  $(BIN)BigQ.o $(BIN)Pipe.o  $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test1.o -lfl $(LDFLAGS)
 	
-main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o main.o
-	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)DBFile.o $(BIN)main.o -lfl $(LDFLAGS)
+test2: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o DBFile.o HeapFile.o SortedFile.o y.tab.o lex.yy.o test2.o 
+	$(CC) -o $(BIN)test2 $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o  $(BIN)BigQ.o $(BIN)Pipe.o  $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test2.o -lfl $(LDFLAGS)
+
+main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o HeapFile.o SortedFile.o main.o
+	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)main.o -lfl $(LDFLAGS)
+
+gtesting.o: gtest-all.o gtest_main.o BigQ.o Pipe.o
+	$(CC) $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)DBFile.o $(BIN)gtest_main.o $(BIN)gtest-all.o $(SOURCE)gtesting.cc -o $(BIN)$@ $(LDFLAGS)
 	
-test.o: $(SOURCE)test.cc
+test1.o: $(SOURCE)test1.cc
+	$(CC) -g -c  $< -o $(BIN)$@ $(LDFLAGS)
+
+test2.o: $(SOURCE)test2.cc
 	$(CC) -g -c  $< -o $(BIN)$@ $(LDFLAGS)
 
 main.o: $(SOURCE)main.cc
@@ -74,6 +83,12 @@ Comparison.o: $(SOURCE)Comparison.cc
 ComparisonEngine.o: $(SOURCE)ComparisonEngine.cc
 	$(CC) -g -c  $< -o $(BIN)$@
 	
+HeapFile.o: $(SOURCE)HeapFile.cc
+	$(CC) -g -c  $< -o $(BIN)$@
+
+SortedFile.o: $(SOURCE)SortedFile.cc
+	$(CC) -g -c  $< -o $(BIN)$@
+
 DBFile.o: $(SOURCE)DBFile.cc
 	$(CC) -g -c  $< -o $(BIN)$@
 
@@ -103,9 +118,6 @@ lex.yy.o: $(SOURCE)Lexer.l
 	mv lex.* $(SOURCE)
 	gcc  -c $(SOURCE)lex.yy.c -o $(BIN)$@
 
-gtesting.o: gtest-all.o gtest_main.o
-	$(CC) $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)DBFile.o $(BIN)gtest_main.o $(BIN)gtest-all.o $(SOURCE)gtesting.cc -o $(BIN)$@ $(LDFLAGS)
-
 clean: 
 	rm -f $(BIN)*.o
 	rm -f $(BIN)*.out
@@ -114,6 +126,7 @@ clean:
 	rm -f $(BIN)y.tab.h
 	rm -f $(BIN)*.bin
 	rm -f $(BIN)main $(BIN)test
+	rm -f ./DATA/10M/*.metadata
 
 
 

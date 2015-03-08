@@ -4,6 +4,7 @@ OrderMaker G_sortorder;
 ComparisonEngine G_comp;
 static int G_runlen=0;
 static int G_curSizeInBytes = 0;
+static BigQ_input G_input;
 
 // Schema mySchema ("../source/catalog", "orders");
 
@@ -606,13 +607,15 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 
  //    finally shut down the out pipe
 	G_sortorder = sortorder;
+	cout << "BigQ constructor " << endl;
+	G_sortorder.Print();
 	G_runlen = runlen;
-	BigQ_input input = {&in, &out};
+	G_input = {&in, &out};
 
 	pthread_t thread;
-	pthread_create (&thread, NULL, TPMMS , (void *)&input);
+	pthread_create (&thread, NULL, TPMMS , (void *)&G_input);
 
-	pthread_join (thread, NULL);
+	// pthread_join (thread, NULL);
 
 }
 
