@@ -18,6 +18,7 @@ class ComparisonEngine {
 private:
 
 	int Run(Record *left, Record *literal, Comparison *c);
+	int CompareRun(Record *left, Record *literal, Comparison *c);
 	int Run(Record *left, Record *right, Record *literal, Comparison *c);
 
 public:
@@ -46,6 +47,7 @@ public:
 	// like the last one, but for unary operations
 	int Compare(Record *left, Record *literal, CNF *myComparison);
 
+	int CompareSort(Record *, Record *, OrderMaker *,CNF * );
 
 };
 

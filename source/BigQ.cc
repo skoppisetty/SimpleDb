@@ -607,8 +607,8 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 
  //    finally shut down the out pipe
 	G_sortorder = sortorder;
-	cout << "BigQ constructor " << endl;
-	G_sortorder.Print();
+	// cout << "BigQ constructor " << endl;
+	// G_sortorder.Print();
 	G_runlen = runlen;
 	G_input = {&in, &out};
 
