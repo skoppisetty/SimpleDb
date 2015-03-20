@@ -93,15 +93,16 @@ void * s_Runit (void * arg) {
 	// string str = to_string(sum) + "|";
 	// cout << str << endl;
 
-	ostringstream out;
-    out << buffer;
+	ostringstream outs;
+    outs << buffer;
     // cout << out.str() + "|" << endl;
-    string str = out.str() + "|";
+    string str = outs.str() + "|";
 	// char *val = str.c_str();
 	rec.ComposeRecord(&out_sch,str.c_str());
-	rec.Print(&out_sch);
+	// rec.Print(&out_sch);
 	t->out->Insert(&rec);
 	t->out->ShutDown();
+	cout << "thread done" << endl;
 }
 void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
 	cout << "Sum::Run()" << endl;
@@ -115,7 +116,9 @@ void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
 
 
 void Sum::WaitUntilDone () {
+	cout << "twaiting" << endl;
 	pthread_join (thread, NULL);
+	cout << "tjoined" << endl;
 }
 
 void Sum::Use_n_Pages (int runlen) {

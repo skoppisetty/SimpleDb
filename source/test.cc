@@ -154,8 +154,9 @@ void q3 () {
 	T.Use_n_Pages (1);
 	SF_s.Run (dbf_s, _s, cnf_s, lit_s);
 	T.Run (_s, _out, func);
-
+	cout << " started" << endl;
 	SF_s.WaitUntilDone ();
+	cout << "waiting" << endl;
 	T.WaitUntilDone ();
 	cout << " Done" << endl;
 	Schema out_sch ("out_sch", 1, &DA);
