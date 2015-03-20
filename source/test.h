@@ -14,7 +14,7 @@ using namespace std;
 
 // test settings file should have the 
 // catalog_path, dbfile_dir and tpch_dir information in separate lines
-const char *settings = "test.cat";
+const char *settings = "../source/test.cat";
 
 // donot change this information here
 char *catalog_path, *dbfile_dir, *tpch_dir = NULL;
@@ -204,8 +204,10 @@ void setup () {
 }
 
 void cleanup () {
+	cout << "cleaning up" << endl;
 	delete s, p, ps, n, li, r, o, c;
 	free (catalog_path);
+	cout << "cleaning done" << endl;
 }
 
 #endif
