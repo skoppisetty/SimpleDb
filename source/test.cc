@@ -145,19 +145,19 @@ void q3 () {
 	init_SF_s (pred_s, 100);
 
 	Sum T;
-		// _s (input pipe)
-		Pipe _out (1);
-		Function func;
-			char *str_sum = "(s_acctbal + (s_acctbal * 1.05))";
-			get_cnf (str_sum, s->schema (), func);
-			func.Print ();
+	// _s (input pipe)
+	Pipe _out (1);
+	Function func;
+	char *str_sum = "(s_acctbal + (s_acctbal * 1.05))";
+	get_cnf (str_sum, s->schema (), func);
+	func.Print ();
 	T.Use_n_Pages (1);
 	SF_s.Run (dbf_s, _s, cnf_s, lit_s);
 	T.Run (_s, _out, func);
 
 	SF_s.WaitUntilDone ();
 	T.WaitUntilDone ();
-
+	cout << " Done" << endl;
 	Schema out_sch ("out_sch", 1, &DA);
 	int cnt = clear_pipe (_out, &out_sch, true);
 
