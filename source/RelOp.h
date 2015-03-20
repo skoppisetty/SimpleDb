@@ -13,6 +13,13 @@ struct sf_input{
 	Record *literal;
 };
 
+struct p_input{
+	Pipe *in;
+	Pipe *out;
+	int **keep;
+	int *num_in;
+	int *num_out;
+};
 
 class RelationalOp {
 	public:
@@ -46,10 +53,13 @@ class SelectPipe : public RelationalOp {
 	void Use_n_Pages (int n) { }
 };
 class Project : public RelationalOp { 
+	private:
+	pthread_t thread;
+
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 class Join : public RelationalOp { 
 	public:
