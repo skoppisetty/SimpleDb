@@ -42,6 +42,12 @@ struct d_input{
 	Schema *sch;
 };
 
+struct w_input{
+	Pipe *in;
+	FILE *f;
+	Schema *sch;
+};
+
 class RelationalOp {
 	public:
 	// blocks the caller until the particular relational operator 
@@ -118,8 +124,8 @@ class WriteOut : public RelationalOp {
 	private:
 	pthread_t thread;
 	public:
-	void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 #endif

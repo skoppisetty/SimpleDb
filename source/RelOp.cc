@@ -8,7 +8,7 @@ sf_input G_sf_input;
 p_input G_p_input;
 s_input G_s_input;
 d_input G_d_input;
-
+w_input G_w_input;
 
 void * sp_Runit (void * arg) {
 	// cout << "Inside thread SelectFile::Runit" << endl;
@@ -176,11 +176,14 @@ void * d_Runit (void * arg) {
 	struct {OrderMaker *o; int l;} startup = {ord, runlen};
 	char * path = "./temp.bin";
 	dbfile.Create (path, sorted, &startup);
+	dbfile.Close();
+	dbfile.Open(path);
 	dbfile.MoveFirst ();
-	Record * temp = new Record;
-	while(t->in->Remove(temp)){
-		dbfile.Add(*temp);
+	Record temp;
+	while(t->in->Remove(&temp)){
+		dbfile.Add(temp);
 	}
+	cout << "Created the file" << endl;
 	dbfile.MoveFirst ();
 	Record recs[2];
 	ComparisonEngine comp;
@@ -193,11 +196,13 @@ void * d_Runit (void * arg) {
 			if (comp.Compare (prevs, lasts, ord) == 0) {
 			}
 			else{
+				// prevs->Print(t->sch);
 				t->out->Insert(prevs);
 			}
 		}
 		j++;
 	}
+	// lasts->Print(t->sch);
 	t->out->Insert(lasts);
 	t->out->ShutDown();
 	cout << "thread done" << endl;
@@ -216,5 +221,72 @@ void DuplicateRemoval::WaitUntilDone () {
 }
 
 void DuplicateRemoval::Use_n_Pages (int runlen) {
+
+}
+
+
+void * w_Runit (void * arg) {
+	cout << "Inside thread write::Runit" << endl;
+	w_input *t = (w_input *) arg;
+	Record temp;
+	while(t->in->Remove(&temp)){
+		int n = t->sch->GetNumAtts();
+		Attribute *atts = t->sch->GetAtts();
+		// loop through all of the attributes
+		for (int i = 0; i < n; i++) {
+			// print the attribute name
+			fprintf(t->f, "%s: ", atts[i].name);
+		
+
+			// use the i^th slot at the head of the record to get the
+			// offset to the correct attribute in the record
+			int pointer = ((int *) temp.bits)[i + 1];
+
+			// here we determine the type, which given in the schema;
+			// depending on the type we then print out the contents
+			fprintf(t->f, "[");
+			// first is integer
+			if (atts[i].myType == Int) {
+				int *myInt = (int *) &(temp.bits[pointer]);
+				// cout << *myInt;	
+				fprintf(t->f, "%d", *myInt);
+
+			// then is a double
+			} else if (atts[i].myType == Double) {
+				double *myDouble = (double *) &(temp.bits[pointer]);
+				fprintf(t->f, "%f", *myDouble);	
+
+			// then is a character string
+			} else if (atts[i].myType == String) {
+				char *myString = (char *) &(temp.bits[pointer]);
+				fprintf(t->f, "%s", myString);	
+			} 
+
+			fprintf(t->f, "]");
+
+			// print out a comma as needed to make things pretty
+			if (i != n - 1) {
+				fprintf(t->f, ",");
+			}
+		}
+
+		fprintf(t->f, "\n");
+	}
+	cout << "thread done" << endl;
+}
+void WriteOut::Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) {
+	cout << "WriteOut::Run()" << endl;
+	G_w_input = {&inPipe, outFile, &mySchema};
+  	pthread_create (&thread, NULL, w_Runit ,(void *)&G_w_input);
+  
+}
+
+
+
+void WriteOut::WaitUntilDone () {
+	pthread_join (thread, NULL);
+}
+
+void WriteOut::Use_n_Pages (int runlen) {
 
 }
