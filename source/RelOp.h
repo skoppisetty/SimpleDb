@@ -8,6 +8,13 @@
 #include <sstream>
 #include <iomanip>
 
+struct sp_input{
+	Pipe *in;
+	Pipe *out;
+	CNF *selop;
+	Record *literal;
+};
+
 struct sf_input{
 	DBFile *inFile;
 	Pipe *out;
@@ -55,9 +62,9 @@ class SelectPipe : public RelationalOp {
 	private:
 	pthread_t thread;
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 class Project : public RelationalOp { 
 	private:

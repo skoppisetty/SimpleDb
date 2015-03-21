@@ -3,10 +3,44 @@
 // typedef  void* (SelectFile::*sf_Ptr)(void *);
 // typedef  void* (*PthreadPtr)(void*);
 // PthreadPtr G_p;
-
+sp_input G_sp_input;
 sf_input G_sf_input;
 p_input G_p_input;
 s_input G_s_input;
+
+
+void * sp_Runit (void * arg) {
+	// cout << "Inside thread SelectFile::Runit" << endl;
+	sp_input *t = (sp_input *) arg;
+	ComparisonEngine ceng;
+	Record rec;
+	while(t->in->Remove(&rec)){
+		if(ceng.Compare(&rec,t->literal,t->selop)==1){
+			t->out->Insert(&rec);
+		}
+	}
+	t->out->ShutDown();
+}
+
+void SelectPipe::Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) {
+	cout << "SelectPipe::Run()" << endl;
+	G_sp_input = {&inPipe, &outPipe, &selOp, &literal};
+ 	// sf_Ptr sft = &SelectFile::Runit;
+	// G_p = *(PthreadPtr*)&sft;
+  	pthread_create (&thread, NULL, sp_Runit ,(void *)&G_sp_input);
+  
+}
+
+
+
+void SelectPipe::WaitUntilDone () {
+	pthread_join (thread, NULL);
+}
+
+void SelectPipe::Use_n_Pages (int runlen) {
+
+}
+
 
 void * sf_Runit (void * arg) {
 	// cout << "Inside thread SelectFile::Runit" << endl;
@@ -88,18 +122,20 @@ void * s_Runit (void * arg) {
 	cout << "Sum: " << sum << endl;
 	Attribute DA = {"double", Double};
 	Schema out_sch ("out_sch", 1, &DA);
-	char buffer[32];
-  	sprintf(buffer, "%1.2f", sum);
+	// char buffer[32];
+  	// sprintf(buffer, "%1.2f", sum);
 	// string str = to_string(sum) + "|";
 	// cout << str << endl;
 
-	ostringstream outs;
-    outs << buffer;
+	// ostringstream outs;
+    // outs << buffer;
     // cout << out.str() + "|" << endl;
-    string str = outs.str() + "|";
+    // string str = outs.str() + "|";
 	// char *val = str.c_str();
-	rec.ComposeRecord(&out_sch,str.c_str());
-	// rec.Print(&out_sch);
+	char * cls = "10.20|\n";
+	rec.ComposeRecord(&out_sch,cls);
+	// rec.ComposeRecord(&out_sch,str.c_str());
+	rec.Print(&out_sch);
 	t->out->Insert(&rec);
 	t->out->ShutDown();
 	cout << "thread done" << endl;
