@@ -1,3 +1,9 @@
+/source/lex.yy.c
+/source/lex.yyfunc.c
+/source/y.tab.c
+/source/y.tab.h
+/source/yyfunc.tab.c
+/source/yyfunc.tab.h
 /DATA/1G/customer.tbl
 /DATA/1G/lineitem.tbl
 /DATA/1G/nation.tbl

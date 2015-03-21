@@ -128,7 +128,7 @@ y.tab.o: $(SOURCE)Parser.y
 yyfunc.tab.o: $(SOURCE)ParserFunc.y
 	yacc -p "yyfunc" -b "yyfunc" -d $(SOURCE)ParserFunc.y
 	mv yyfunc.tab.* $(SOURCE)
-	#sed $(tag) $(SOURCE)yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	sed $(tag) $(SOURCE)yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
 	g++ -c $(SOURCE)yyfunc.tab.c -o $(BIN)$@
 
 lex.yy.o: $(SOURCE)Lexer.l

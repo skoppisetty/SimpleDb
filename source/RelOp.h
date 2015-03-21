@@ -25,15 +25,21 @@ struct sf_input{
 struct p_input{
 	Pipe *in;
 	Pipe *out;
-	int **keep;
-	int *num_in;
-	int *num_out;
+	int *keep;
+	int num_in;
+	int num_out;
 };
 
 struct s_input{
 	Pipe *in;
 	Pipe *out;
 	Function *func;
+};
+
+struct d_input{
+	Pipe *in;
+	Pipe *out;
+	Schema *sch;
 };
 
 class RelationalOp {
@@ -88,9 +94,9 @@ class DuplicateRemoval : public RelationalOp {
 	private:
 	pthread_t thread;
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 class Sum : public RelationalOp {
 	private:

@@ -7,6 +7,7 @@ sp_input G_sp_input;
 sf_input G_sf_input;
 p_input G_p_input;
 s_input G_s_input;
+d_input G_d_input;
 
 
 void * sp_Runit (void * arg) {
@@ -77,20 +78,25 @@ void SelectFile::Use_n_Pages (int runlen) {
 void * p_Runit (void * arg) {
 	cout << "Inside thread Project::Runit" << endl;
 	p_input *t = (p_input *) arg;
-	Record temp;
-	while(t->in->Remove(&temp)){
-		// temp.Print(&part_schema);
-		// cout << "inside" << endl;
-		temp.Project(*t->keep,*t->num_out,*t->num_in);
-		// temp.Print(&part_schema);
-		// cout << "sending" << endl;
-		t->out->Insert(&temp);
+	cout << "Size:" << (t->num_out) << endl;
+	for(int i = 0;i< t->num_out;i++){
+		cout << t->keep[i] << endl;
+	}
+	while(true){
+	Record * temp = new Record;
+		if(t->in->Remove(temp)){
+			temp->Project(t->keep,t->num_out,t->num_in);
+			t->out->Insert(temp);
+		}	
+		else{
+			break;
+		}	
 	}
 	t->out->ShutDown();
 }
 void Project::Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput) {
 	cout << "Project::Run()" << endl;
-	G_p_input = {&inPipe, &outPipe, &keepMe, &numAttsInput, &numAttsOutput};
+	G_p_input = {&inPipe, &outPipe, keepMe, numAttsInput, numAttsOutput};
  	// sf_Ptr sft = &SelectFile::Runit;
 	// G_p = *(PthreadPtr*)&sft;
   	pthread_create (&thread, NULL, p_Runit ,(void *)&G_p_input);
@@ -158,5 +164,57 @@ void Sum::WaitUntilDone () {
 }
 
 void Sum::Use_n_Pages (int runlen) {
+
+}
+
+void * d_Runit (void * arg) {
+	cout << "Inside thread Sum::Runit" << endl;
+	d_input *t = (d_input *) arg;
+	OrderMaker * ord  = new OrderMaker(t->sch);
+	int runlen = 10;
+	DBFile dbfile;
+	struct {OrderMaker *o; int l;} startup = {ord, runlen};
+	char * path = "./temp.bin";
+	dbfile.Create (path, sorted, &startup);
+	dbfile.MoveFirst ();
+	Record * temp = new Record;
+	while(t->in->Remove(temp)){
+		dbfile.Add(*temp);
+	}
+	dbfile.MoveFirst ();
+	Record recs[2];
+	ComparisonEngine comp;
+	Record *lasts = NULL, *prevs = NULL;
+	int j = 0;
+	while (dbfile.GetNext(recs[j%2])) {
+		prevs = lasts;
+		lasts = &recs[j%2];
+		if (prevs && lasts) {
+			if (comp.Compare (prevs, lasts, ord) == 0) {
+			}
+			else{
+				t->out->Insert(prevs);
+			}
+		}
+		j++;
+	}
+	t->out->Insert(lasts);
+	t->out->ShutDown();
+	cout << "thread done" << endl;
+}
+void DuplicateRemoval::Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {
+	cout << "DuplicateRemoval::Run()" << endl;
+	G_d_input = {&inPipe, &outPipe, &mySchema};
+  	pthread_create (&thread, NULL, d_Runit ,(void *)&G_d_input);
+  
+}
+
+
+
+void DuplicateRemoval::WaitUntilDone () {
+	pthread_join (thread, NULL);
+}
+
+void DuplicateRemoval::Use_n_Pages (int runlen) {
 
 }
