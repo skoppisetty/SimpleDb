@@ -144,6 +144,7 @@ lex.yyfunc.o: $(SOURCE)LexerFunc.l
 clean: 
 	rm -f $(BIN)*.o
 	rm -f $(BIN)*.out
+	rm -f $(BIN)*.metadata
 	rm -f $(SOURCE)y.tab.*
 	rm -f $(SOURCE)yyfunc.tab.*
 	rm -f $(SOURCE)lex.yy.*

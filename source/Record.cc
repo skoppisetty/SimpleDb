@@ -469,4 +469,10 @@ void Record :: Print (Schema *mySchema) {
 }
 
 
-
+int Record :: GetNumAtts () {
+	int numAttsNow = 0;
+	if(bits){
+		numAttsNow = ((int *) bits)[1]/sizeof(int) - 1 ;
+	}
+	return numAttsNow;
+}

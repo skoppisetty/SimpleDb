@@ -42,10 +42,25 @@ struct d_input{
 	Schema *sch;
 };
 
+struct j_input{
+	Pipe *inL;
+	Pipe *inR;
+	Pipe *out;
+	CNF *cnf;
+	Record *literal;
+};
+
 struct w_input{
 	Pipe *in;
 	FILE *f;
 	Schema *sch;
+};
+
+struct g_input{
+	Pipe *in;
+	Pipe *out;
+	OrderMaker *ord;
+	Function *func;
 };
 
 class RelationalOp {
@@ -92,9 +107,9 @@ class Join : public RelationalOp {
 	pthread_t thread;
 	
 	public:
-	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 class DuplicateRemoval : public RelationalOp {
 	private:
@@ -116,9 +131,9 @@ class GroupBy : public RelationalOp {
 	private:
 	pthread_t thread;
 	public:
-	void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) { }
-	void WaitUntilDone () { }
-	void Use_n_Pages (int n) { }
+	void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
+	void WaitUntilDone ();
+	void Use_n_Pages (int n);
 };
 class WriteOut : public RelationalOp {
 	private:

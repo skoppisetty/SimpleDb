@@ -159,9 +159,12 @@ int SendAll(merger *merge_file, BigQ_input *t){
 
 // finally sending the sorted
 int SendSocket(merger *merge_file, BigQ_input *t){
+	// cout << merge_file->name << endl;
 	merge_file->curpage = 0;
 	merge_file->p.EmptyItOut();
+	// cout << "test ?" << endl;
 	merge_file->f.GetPage(&(merge_file->p),merge_file->curpage);
+	// cout << "works ?" << endl;
 	Record temp;
 	int val = 0;
 	sort(excess.begin(),excess.end(),mysorter);
@@ -184,6 +187,7 @@ int SendSocket(merger *merge_file, BigQ_input *t){
 		t->out->Insert(excess[val]);
 		val++;
 	}
+	// cout << "sendng" << endl;
 }
 
 // This is a helper function to check  the unsorted records after each merge
@@ -381,6 +385,7 @@ void *TPMMS (void *arg) {
 	merger * source_file = first_file;
 	merger * destination_file = second_file;
 	int max_page = 0;
+	block_state = initial;
 	// cout << "Initial start" << endl;
 	cout << "\nTPMMS Merge start\n" << endl;
 	while(block_state != merge_done){
@@ -594,7 +599,10 @@ void *TPMMS (void *arg) {
 	SendSocket(destination_file,t);
 
 	t->out->ShutDown();
-
+	// remove(first_file->name);
+	// remove(second_file->name);
+	// remove ("Bigq.bin"); 
+	// remove ("Bigq_temp.bin"); 
 	delete first_file;
 	delete second_file;
 }

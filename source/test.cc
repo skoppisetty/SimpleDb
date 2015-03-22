@@ -56,10 +56,6 @@ int rAtts = 3;
 
 void init_SF_ps (char *pred_str, int numpgs) {
 	dbf_ps.Open (ps->path());
-	Record rec;
-	// while(dbf_ps.GetNext(rec)){
-	// 	cout << "getnext" << endl;
-	// }
 	get_cnf (pred_str, ps->schema (), cnf_ps, lit_ps);
 	SF_ps.Use_n_Pages (numpgs);
 }
@@ -98,11 +94,12 @@ void init_SF_c (char *pred_str, int numpgs) {
 // expected output: 31 records
 void q1 () {
 
-	char *pred_ps = "(ps_supplycost < 1.08)";
+	char *pred_ps = "(ps_supplycost < 1.03)";
 	init_SF_ps (pred_ps, 100);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps);
 	SF_ps.WaitUntilDone ();
+
 	int cnt = clear_pipe (_ps, ps->schema (), true);
 	cout << "\n\n query1 returned " << cnt << " records \n";
 
@@ -114,7 +111,7 @@ void q1 () {
 // expected output: 22 records
 void q2 () {
 
-	char *pred_p = "(p_retailprice > 931.01) AND (p_retailprice < 951.3)";
+	char *pred_p = "(p_retailprice > 931.01) AND (p_retailprice < 931.3)";
 	init_SF_p (pred_p, 100);
 
 	Project P_p;
@@ -125,9 +122,15 @@ void q2 () {
 	P_p.Use_n_Pages (buffsz);
 
 	SF_p.Run (dbf_p, _p, cnf_p, lit_p);
+	// int cnt = clear_pipe (_p, p->schema(), true);
+	// cout << "\n\n query2 returned " << cnt << " records \n";
+
+	// SF_p.Run (dbf_p, _p, cnf_p, lit_p);
 	P_p.Run (_p, _out, keepMe, numAttsIn, numAttsOut);
+
 	SF_p.WaitUntilDone ();
 	P_p.WaitUntilDone ();
+
 	Attribute att3[] = {IA, SA, DA};
 	Schema out_sch ("out_sch", numAttsOut, att3);
 	int cnt = clear_pipe (_out, &out_sch, true);
@@ -145,20 +148,19 @@ void q3 () {
 	init_SF_s (pred_s, 100);
 
 	Sum T;
-	// _s (input pipe)
-	Pipe _out (1);
-	Function func;
-	char *str_sum = "(s_acctbal + (s_acctbal * 1.05))";
-	get_cnf (str_sum, s->schema (), func);
-	func.Print ();
+		// _s (input pipe)
+		Pipe _out (1);
+		Function func;
+			char *str_sum = "(s_acctbal + (s_acctbal * 1.05))";
+			get_cnf (str_sum, s->schema (), func);
+			func.Print ();
 	T.Use_n_Pages (1);
 	SF_s.Run (dbf_s, _s, cnf_s, lit_s);
 	T.Run (_s, _out, func);
-	cout << " started" << endl;
+
 	SF_s.WaitUntilDone ();
-	cout << "waiting" << endl;
 	T.WaitUntilDone ();
-	cout << " Done" << endl;
+
 	Schema out_sch ("out_sch", 1, &DA);
 	int cnt = clear_pipe (_out, &out_sch, true);
 
@@ -177,7 +179,9 @@ void q4 () {
 	char *pred_s = "(s_suppkey = s_suppkey)";
 	init_SF_s (pred_s, 100);
 	SF_s.Run (dbf_s, _s, cnf_s, lit_s); // 10k recs qualified
-
+	// int cnts = clear_pipe (_s, s->schema(), true);
+	// cout << "\n\n query2 returned " << cnts << " records \n";
+	// return;
 	char *pred_ps = "(ps_suppkey = ps_suppkey)";
 	init_SF_ps (pred_ps, 100);
 
@@ -204,10 +208,14 @@ void q4 () {
 	T.Use_n_Pages (1);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
+	// int cnt_s = clear_pipe (_ps, ps->schema(), true);
+	// cout << "\n\n query2 returned " << cnt_s << " records \n";
+	// return;
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
 	T.Run (_s_ps, _out, func);
 
 	SF_ps.WaitUntilDone ();
+	// SF_s.WaitUntilDone ();
 	J.WaitUntilDone ();
 	T.WaitUntilDone ();
 
@@ -371,15 +379,10 @@ int main (int argc, char *argv[]) {
 	int qindx = atoi (argv[1]);
 
 	if (qindx > 0 && qindx < 9) {
-		cout << "Setup starting" << endl;
 		setup ();
-		cout << "Setup done" << endl;
 		query = query_ptr [qindx - 1];
-		cout << "Calling query" << endl;
 		query ();
-		cout << "query done" << endl;
 		cleanup ();
-		cout << "cleanup" << endl;
 		cout << "\n\n";
 	}
 	else {
