@@ -27,10 +27,12 @@ void * sp_Runit (void * arg) {
 
 void SelectPipe::Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) {
 	cout << "SelectPipe::Run()" << endl;
-	G_sp_input = {&inPipe, &outPipe, &selOp, &literal};
+
+	sp_input *sp_in = new sp_input;
+	*sp_in = {&inPipe, &outPipe, &selOp, &literal};
  	// sf_Ptr sft = &SelectFile::Runit;
 	// G_p = *(PthreadPtr*)&sft;
-  	pthread_create (&thread, NULL, sp_Runit ,(void *)&G_sp_input);
+  	pthread_create (&thread, NULL, sp_Runit ,(void *)sp_in);
   
 }
 
@@ -45,26 +47,44 @@ void SelectPipe::Use_n_Pages (int runlen) {
 }
 
 
-void * sf_Runit (void * arg) {
+// void * SelectFile::sf_Runit (void * arg) {
+// 	// cout << "Inside thread SelectFile::Runit" << endl;
+// 	sf_input *t = (sf_input *) arg;
+// 	ComparisonEngine ceng;
+// 	Record rec;
+// 	while(t->inFile->GetNext(rec)){
+// 		// cout << "Num of atts in record " << rec.GetNumAtts() << endl;
+// 		if(ceng.Compare(&rec,t->literal,t->selop)==1){
+// 			t->out->Insert(&rec);
+// 		}
+// 	}
+// 	t->out->ShutDown();
+// }
+
+void * SelectFile::sf_Runit () {
 	// cout << "Inside thread SelectFile::Runit" << endl;
-	sf_input *t = (sf_input *) arg;
+	
 	ComparisonEngine ceng;
 	Record rec;
-	while(t->inFile->GetNext(rec)){
+	while(sf_in->inFile->GetNext(rec)){
 		// cout << "Num of atts in record " << rec.GetNumAtts() << endl;
-		if(ceng.Compare(&rec,t->literal,t->selop)==1){
-			t->out->Insert(&rec);
+		if(ceng.Compare(&rec,sf_in->literal,sf_in->selop)==1){
+			sf_in->out->Insert(&rec);
 		}
 	}
-	t->out->ShutDown();
+	sf_in->out->ShutDown();
 }
 
+
 void SelectFile::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal) {
-	cout << "SelectFile::Run()" << endl;
-	G_sf_input = {&inFile, &outPipe, &selOp, &literal};
+	// cout << "SelectFile::Run()" << endl;
+
+	sf_in = new sf_input;
+	*sf_in = {&inFile, &outPipe, &selOp, &literal};
  	// sf_Ptr sft = &SelectFile::Runit;
 	// G_p = *(PthreadPtr*)&sft;
-  	pthread_create (&thread, NULL, sf_Runit ,(void *)&G_sf_input);
+  	// pthread_create (&thread, NULL, sf_Runit ,(void *)sf_in);
+  	pthread_create (&thread, NULL, Run_helper ,this);
   
 }
 
@@ -79,9 +99,9 @@ void SelectFile::Use_n_Pages (int runlen) {
 }
 
 void * p_Runit (void * arg) {
-	cout << "Inside thread Project::Runit" << endl;
+	// cout << "Inside thread Project::Runit" << endl;
 	p_input *t = (p_input *) arg;
-	cout << "Size:" << (t->num_out) << endl;
+	// cout << "Size:" << (t->num_out) << endl;
 	for(int i = 0;i< t->num_out;i++){
 		cout << t->keep[i] << endl;
 	}
@@ -98,7 +118,7 @@ void * p_Runit (void * arg) {
 	t->out->ShutDown();
 }
 void Project::Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput) {
-	cout << "Project::Run()" << endl;
+	// cout << "Project::Run()" << endl;
 	G_p_input = {&inPipe, &outPipe, keepMe, numAttsInput, numAttsOutput};
  	// sf_Ptr sft = &SelectFile::Runit;
 	// G_p = *(PthreadPtr*)&sft;
@@ -118,7 +138,7 @@ void Project::Use_n_Pages (int runlen) {
 
 
 void * s_Runit (void * arg) {
-	cout << "Inside thread Sum::Runit" << endl;
+	// cout << "Inside thread Sum::Runit" << endl;
 	s_input *t = (s_input *) arg;
 	Record rec;
 	double sum = 0.0;
@@ -128,7 +148,7 @@ void * s_Runit (void * arg) {
 		t->func->Apply(rec, ival, dval);
 		sum += (ival + dval);
 	}
-	cout << "Sum: " << sum << endl;
+	// cout << "Sum: " << sum << endl;
 	Attribute DA = {"double", Double};
 	Schema out_sch ("out_sch", 1, &DA);
 	char buffer[32];
@@ -146,10 +166,10 @@ void * s_Runit (void * arg) {
 	rec.Print(&out_sch);
 	t->out->Insert(&rec);
 	t->out->ShutDown();
-	cout << "thread done" << endl;
+	// cout << "thread done" << endl;
 }
 void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
-	cout << "Sum::Run()" << endl;
+	// cout << "Sum::Run()" << endl;
 	G_s_input = {&inPipe, &outPipe, &computeMe};
  	// sf_Ptr sft = &SelectFile::Runit;
 	// G_p = *(PthreadPtr*)&sft;
@@ -160,9 +180,9 @@ void Sum::Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
 
 
 void Sum::WaitUntilDone () {
-	cout << "twaiting" << endl;
+	// cout << "twaiting" << endl;
 	pthread_join (thread, NULL);
-	cout << "tjoined" << endl;
+	// cout << "tjoined" << endl;
 }
 
 void Sum::Use_n_Pages (int runlen) {
@@ -170,7 +190,7 @@ void Sum::Use_n_Pages (int runlen) {
 }
 
 void * d_Runit (void * arg) {
-	cout << "Inside thread Sum::Runit" << endl;
+	// cout << "Inside thread Sum::Runit" << endl;
 	d_input *t = (d_input *) arg;
 	OrderMaker * ord  = new OrderMaker(t->sch);
 	int runlen = 10;
@@ -185,7 +205,7 @@ void * d_Runit (void * arg) {
 	while(t->in->Remove(&temp)){
 		dbfile.Add(temp);
 	}
-	cout << "Created the file" << endl;
+	// cout << "Created the file" << endl;
 	dbfile.MoveFirst ();
 	Record recs[2];
 	ComparisonEngine comp;
@@ -207,10 +227,10 @@ void * d_Runit (void * arg) {
 	// lasts->Print(t->sch);
 	t->out->Insert(lasts);
 	t->out->ShutDown();
-	cout << "thread done" << endl;
+	// cout << "thread done" << endl;
 }
 void DuplicateRemoval::Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {
-	cout << "DuplicateRemoval::Run()" << endl;
+	// cout << "DuplicateRemoval::Run()" << endl;
 	G_d_input = {&inPipe, &outPipe, &mySchema};
   	pthread_create (&thread, NULL, d_Runit ,(void *)&G_d_input);
   
@@ -228,7 +248,7 @@ void DuplicateRemoval::Use_n_Pages (int runlen) {
 
 
 void * w_Runit (void * arg) {
-	cout << "Inside thread write::Runit" << endl;
+	// cout << "Inside thread write::Runit" << endl;
 	w_input *t = (w_input *) arg;
 	Record temp;
 	while(t->in->Remove(&temp)){
@@ -274,10 +294,10 @@ void * w_Runit (void * arg) {
 
 		fprintf(t->f, "\n");
 	}
-	cout << "thread done" << endl;
+	// cout << "thread done" << endl;
 }
 void WriteOut::Run (Pipe &inPipe, FILE *outFile, Schema &mySchema) {
-	cout << "WriteOut::Run()" << endl;
+	// cout << "WriteOut::Run()" << endl;
 	G_w_input = {&inPipe, outFile, &mySchema};
   	pthread_create (&thread, NULL, w_Runit ,(void *)&G_w_input);
   
@@ -294,7 +314,7 @@ void WriteOut::Use_n_Pages (int runlen) {
 }
 
 void * g_Runit (void * arg) {
-	cout << "Inside thread write::Runit" << endl;
+	// cout << "Inside thread write::Runit" << endl;
 	g_input *t = (g_input *) arg;
 	int runlen = 10;
 	DBFile dbfile;
@@ -309,7 +329,6 @@ void * g_Runit (void * arg) {
 		dbfile.Add(temp);
 	}
 	dbfile.MoveFirst ();
-
 	Record recs[2];
 	ComparisonEngine comp;
 	Record *lasts = NULL, *prevs = NULL;
@@ -317,14 +336,15 @@ void * g_Runit (void * arg) {
 	double sum = 0.0;
 	Attribute DA = {"double", Double};
 	Schema out_sch ("out_sch", 1, &DA);
-	cout << "shit is about to het serious " << endl;
+	// cout << "shit is about to het serious " << endl;
 	while (dbfile.GetNext(recs[j%2])) {
 		prevs = lasts;
 		lasts = &recs[j%2];
+		// cout << "loop start" << endl;
 		if (prevs && lasts) {
 			int ival = 0; 
 			double dval = 0.0;
-			cout << "error" << endl;
+			// cout << "error" << endl;
 			t->func->Apply(*prevs, ival, dval);
 			sum += (ival + dval);
 			if (comp.Compare (prevs, lasts, t->ord) == 0) {
@@ -338,37 +358,41 @@ void * g_Runit (void * arg) {
     			out << buffer;
     			string str = out.str() + "|";
     			cout << str << endl;
+    			// cout << "loop" << endl;
 				prevs->ComposeRecord(&out_sch,str.c_str());
 				prevs->Print(&out_sch);
 				sum = 0.0;
 				t->out->Insert(prevs);
+				// cout << "loop end" << endl;
 				// t->out->Insert(prevs);
 			}
 		}
 		j++;
 	}
 	// generating for the last record
+	// cout << "end loop" << endl;
 	int ival = 0; 
 	double dval = 0.0;
 	t->func->Apply(*lasts, ival, dval);
 	sum += (ival + dval);
 	char buffer[32];
 	sprintf(buffer, "%1.2f", sum);
+	// cout << "Done" << endl;
 	ostringstream out;
 	out << buffer;
 	string str = out.str() + "|";
-	cout << "Holy shit" << endl;
+	// cout << "Holy shit" << endl;
 	lasts->ComposeRecord(&out_sch,str.c_str());
 	// lasts->Print(&out_sch);
 	cout << str << endl;
 	// lasts->Print(t->sch);
 	t->out->Insert(lasts);
 	t->out->ShutDown();
-	cout << "thread done" << endl;
+	// cout << "Groupby thread done" << endl;
 
 }
 void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {
-	cout << "WriteOut::Run()" << endl;
+	// cout << "WriteOut::Run()" << endl;
 	G_g_input = {&inPipe, &outPipe, &groupAtts, &computeMe};
   	pthread_create (&thread, NULL, g_Runit ,(void *)&G_g_input);
   
@@ -385,7 +409,7 @@ void GroupBy::Use_n_Pages (int runlen) {
 }
 
 void * j_Runit (void * arg) {
-	cout << "Join::Runit" << endl;
+	// cout << "Join::Runit" << endl;
 	j_input *t = (j_input *) arg;
 	// Create ordermaker
 	OrderMaker so1,so2;
@@ -411,7 +435,7 @@ void * j_Runit (void * arg) {
 	db2.Open(path2);
 	Record temp;
 	int l, r;
-	cout << " starting merging" << endl;
+	// cout << " starting merging" << endl;
 	// if(t->inL->Remove(&temp)){
 	// 	l = temp.GetNumAtts();
 	// 	db1.Add(temp);
@@ -422,20 +446,20 @@ void * j_Runit (void * arg) {
 	// }
 	while(t->inL->Remove(&temp)){
 		l = temp.GetNumAtts();
-		cout << ".";
+		// cout << ".";
 		db1.Add(temp);
-		cout << "*" ;
+		// cout << "*" ;
 	}
-	cout << "One file records done" << endl;
+	// cout << "One file records done" << endl;
 	while(t->inR->Remove(&temp)){
 		r = temp.GetNumAtts();
-		cout << ".";
+		// cout << ".";
 		db2.Add(temp);
-		cout << "*" ;
+		// cout << "*" ;
 	}
-	cout << "records added" << endl;
+	// cout << "records added" << endl;
 	int A[l+r];
-	cout << "Size :" <<  l+r << endl;
+	// cout << "Size :" <<  l+r << endl;
 	int i = 0;
 	for(i = 0;i<l;i++){
 		A[i] = i;
@@ -447,16 +471,16 @@ void * j_Runit (void * arg) {
 	for(int k = 0;k<i;k++){
 		cout << A[k] << "\t" ;
 	}
-	cout << "Adding records" << endl;
-	cout << "Add Done" << endl;
+	// cout << "Adding records" << endl;
+	// cout << "Add Done" << endl;
 	db1.MoveFirst();
 	
-	cout << "first mode" << endl;
+	// cout << "first mode" << endl;
 	db2.MoveFirst();
-	cout << "second" << endl;
+	// cout << "second" << endl;
 	ComparisonEngine comp;
 	Record rec1,rec2;
-	cout << "starting comparison merger" << endl;
+	// cout << "starting comparison merger" << endl;
 	int flag1 = 0;
 	int flag2 = 0;
 	if(db1.GetNext(rec1) && db2.GetNext(rec2)){
@@ -471,7 +495,7 @@ void * j_Runit (void * arg) {
 				Record *temp = new Record();
 				temp->MergeRecords (&rec1,&rec2,l,r,A,l+r-(so2.numAtts),l);		
 				// push to output
-				cout << "pushing" << endl;
+				// cout << "pushing" << endl;
 				t->out->Insert(temp);
 				if(!(db1.GetNext(rec1) && db2.GetNext(rec2))){
 					flag1 = 0;
@@ -489,13 +513,13 @@ void * j_Runit (void * arg) {
 			break;
 		}
 	}
-	cout << "done" << endl;
+	// cout << "done" << endl;
 	t->out->ShutDown();
-	cout << "thread done" << endl;
+	// cout << "Join thread done" << endl;
 }
 
 void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
-	cout << "Join::Run()" << endl;
+	// cout << "Join::Run()" << endl;
 	G_j_input = {&inPipeL, &inPipeR, &outPipe, &selOp, &literal};
   	pthread_create (&thread, NULL, j_Runit ,(void *)&G_j_input);
   

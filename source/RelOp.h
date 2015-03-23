@@ -77,8 +77,16 @@ class SelectFile : public RelationalOp {
 	private:
 	pthread_t thread;
 	Record *buffer;
+	sf_input *sf_in;
 	// void * Runit (void * arg);
 	public:
+	static void *Run_helper(void *context){
+		cout << "[sharath] 3" << endl;
+        return ((SelectFile *)context)->sf_Runit();
+        cout << "[sharath] 4" << endl;
+    }
+    // void* sf_Runit (void * arg);
+    void* sf_Runit ();
 	void Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal);
 	void WaitUntilDone ();
 	void Use_n_Pages (int n);
