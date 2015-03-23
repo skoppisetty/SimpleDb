@@ -35,9 +35,7 @@ public:
 	vector<Record *> excess;
 	merger_state block_state;
 	static void *TPMMS_helper(void *context){
-		cout << "[sharath] 3" << endl;
         return ((BigQ *)context)->TPMMS();
-        cout << "[sharath] 4" << endl;
     }
 	BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen);
 	~BigQ ();
