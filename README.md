@@ -1,10 +1,10 @@
 Readme 
 =========
 
-Assignment 2 
+Assignment 3
 
-Part 1 - Implementation of BigQ Class - TPMMS Sort (Spring 2015 DBI)
-Part 2 - DBFile  using BigQ class and using binary search.
+implemention of set of below relational operations:
+SelectPipe, SelectFile, Project, Join, DuplicateRemoval, Sum, GroupBy, and WriteOut.
 
 TEAM:
 =========
@@ -16,13 +16,13 @@ Important Note:
 =========
 We tested with 10M  and 1GB data, but only included 10MB Data with the code.Please set the correct path if you wanna test with 1GB Data/ or your own data.
 
-Please make sure that the Data Path in the test.h is valid before you test.
+Please make sure that the Data Path in the test.cat is valid before you test.
 
-Current Settings:
+Current Settings in test.cat:
 =========
-char *catalog_path = "../source/catalog"; 
-char *tpch_dir ="../DATA/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
-char *dbfile_dir = ""; 
+../source/catalog
+
+../DATA/10M/
 
 
 Folder Structure:
@@ -42,27 +42,13 @@ starting from the root folder
 1. make clean				// Clean any previously compiled code 
 2. make all					// Compile all the files necessary  
 3. cd bin
-4. ./test1					// to run Part1 test cases
-5. ./test2 					// to run Part2 test cases
-
-5. sh sorttest.sh  // only for Part1 		
-// if you wanna do complete automated testing for following sortorders, please run above shell script - Settings are in the /bin/testcases folder
-
-dbfile      |  sortby                                  |  CNF
----------------------------------------------------------------------------------
-region      |  r_name 	 	                       | (r_name)
-       
-partsupp    |  ps_suppkey, ps_partkey 		       | (ps_suppkey) AND (ps_partkey)
-
-lineitem    |  l_shipdate, l_extendedprice, l_quantity | (l_shipdate) AND 
-							 (l_extendedprice) AND 
-							 (l_quantity)
-
+4. ./gtesting.o < 1.txt		// to create and load DBfiles for all the tables
+5. ./test [1-8]				// to run the different queries in test.cc
 
 Executable Files:
 ========
-2. test1 - test script to run the code (sort using BigQ) for various database tables.
-3. test2 - test script to run queries to check if DBFile is being sorted using BigQ class.
+2. gtesting.o 
+3. test
 
 
 Settings:
@@ -73,365 +59,5 @@ The following variables control the various file locations and they are declared
 	o catalog_path -- this stores the catalog file path. By default this is set to "source" folder. 
 
 
-Results with 1G Data for PART 1
+Results with 1G Data 
 =========
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ sh sorttest.sh 
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
- select test option: 
- 	 1. sort 
- 	 2. sort + display 
- 	 3. sort + write 
-	 
- select dbfile to use: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. orders 
-	 7. lineitem 
- 	 	
- specify runlength:
-	 
- specify sort ordering (when done press ctrl-D):
-	  
- tpch file will be loaded from ../DATA/1G/region.tbl
- producer: opened DBFile region.bin
- producer: inserted 5 recs into the pipe
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- consumer: removed 5 recs from the pipe
- consumer: 5 recs out of 5 recs in sorted order 
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
- select test option: 
- 	 1. sort 
- 	 2. sort + display 
- 	 3. sort + write 
-	 
- select dbfile to use: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. orders 
-	 7. lineitem 
- 	 	
- specify runlength:
-	 
- specify sort ordering (when done press ctrl-D):
-	  
- tpch file will be loaded from ../DATA/1G/lineitem.tbl
- producer: opened DBFile lineitem.bin
- producer: 100000
- producer: 200000
- producer: 300000
- producer: 400000
- producer: 500000
- producer: 600000
- producer: 700000
- producer: 800000
- producer: 900000
- producer: 1000000
- producer: 1100000
- producer: 1200000
- producer: 1300000
- producer: 1400000
- producer: 1500000
- producer: 1600000
- producer: 1700000
- producer: 1800000
- producer: 1900000
- producer: 2000000
- producer: 2100000
- producer: 2200000
- producer: 2300000
- producer: 2400000
- producer: 2500000
- producer: 2600000
- producer: 2700000
- producer: 2800000
- producer: 2900000
- producer: 3000000
- producer: 3100000
- producer: 3200000
- producer: 3300000
- producer: 3400000
- producer: 3500000
- producer: 3600000
- producer: 3700000
- producer: 3800000
- producer: 3900000
- producer: 4000000
- producer: 4100000
- producer: 4200000
- producer: 4300000
- producer: 4400000
- producer: 4500000
- producer: 4600000
- producer: 4700000
- producer: 4800000
- producer: 4900000
- producer: 5000000
- producer: 5100000
- producer: 5200000
- producer: 5300000
- producer: 5400000
- producer: 5500000
- producer: 5600000
- producer: 5700000
- producer: 5800000
- producer: 5900000
- producer: 6000000
- producer: inserted 6001215 recs into the pipe
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- consumer: removed 6001215 recs from the pipe
- consumer: 6001215 recs out of 6001215 recs in sorted order 
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
- select test option: 
- 	 1. sort 
- 	 2. sort + display 
- 	 3. sort + write 
-	 
- select dbfile to use: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. orders 
-	 7. lineitem 
- 	 	
- specify runlength:
-	 
- specify sort ordering (when done press ctrl-D):
-	  
- tpch file will be loaded from ../DATA/1G/partsupp.tbl
- producer: opened DBFile partsupp.bin
- producer: 100000
- producer: 200000
- producer: 300000
- producer: 400000
- producer: 500000
- producer: 600000
- producer: 700000
- producer: 800000
- producer: inserted 800000 recs into the pipe
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- consumer: removed 800000 recs from the pipe
- consumer: 800000 recs out of 800000 recs in sorted order 
-
-Results for PART 2:
-=====
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test2
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	./
- 
-
- select test option: 
- 	 1. create sorted dbfile
- 	 2. scan a dbfile
- 	 3. run some query 
- 	 1
-
- select table: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. supplier 
-	 7. orders 
-	 8. lineitem 
- 	 1
-
- specify sort ordering (when done press ctrl-D):
-	 (n_regionkey) AND (n_nationkey)
-Printing ordermaker
-NumAtts =     2
-  0:     2 Int
-  1:     0 Int
-	
- specify runlength:
-	 2
-
- output to dbfile : ./nation.bin
-open metadata dile, f_type = 1
-name = ./nation.bin.metadata
-DBFile::Create() - 
-NumAtts =     2
-  0:     2 Int
-  1:     0 Int
-SortedFile::Close()
- input from file : ../DATA/10M/nation.tbl
-
- select option for : ./nation.bin
- 	 1. add a few (1 to 1k recs)
- 	 2. add a lot (1k to 1e+06 recs) 
- 	 3. run some query 
- 	 2
-opening
-DBFile::Open - 1
-SortedFile::Open()
-SortedFile::MoveFirst ()
-Adding records
-0
-SortedFile::Close()
-BigQ constructor 
-NumAtts =     2
-  0:     2 Int
-  1:     0 Int
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-
-	 added 25 recs..so far 25
-
- create finished.. 25 recs inserted
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test2
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	./
- 
-
- select test option: 
- 	 1. create sorted dbfile
- 	 2. scan a dbfile
- 	 3. run some query 
- 	 2
-
- select table: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. supplier 
-	 7. orders 
-	 8. lineitem 
- 	 1
- scan : ./nation.bin
-DBFile::Open - 1
-SortedFile::Open()
-SortedFile::MoveFirst ()
-SortedFile::MoveFirst ()
-	n_nationkey: [0], n_name: [ALGERIA], n_regionkey: [0], n_comment: [ haggle. carefully final deposits detect slyly agai]
-n_nationkey: [5], n_name: [ETHIOPIA], n_regionkey: [0], n_comment: [ven packages wake quickly. regu]
-n_nationkey: [14], n_name: [KENYA], n_regionkey: [0], n_comment: [ pending excuses haggle furiously deposits. pending, express pinto beans wake fluffily past t]
-n_nationkey: [15], n_name: [MOROCCO], n_regionkey: [0], n_comment: [rns. blithely bold courts among the closely regular packages use furiously bold platelets?]
-n_nationkey: [16], n_name: [MOZAMBIQUE], n_regionkey: [0], n_comment: [s. ironic, unusual asymptotes wake blithely r]
-n_nationkey: [1], n_name: [ARGENTINA], n_regionkey: [1], n_comment: [al foxes promise slyly according to the regular accounts. bold requests alon]
-n_nationkey: [2], n_name: [BRAZIL], n_regionkey: [1], n_comment: [y alongside of the pending deposits. carefully special packages are about the ironic forges. slyly special ]
-n_nationkey: [3], n_name: [CANADA], n_regionkey: [1], n_comment: [eas hang ironic, silent packages. slyly regular packages are furiously over the tithes. fluffily bold]
-n_nationkey: [17], n_name: [PERU], n_regionkey: [1], n_comment: [platelets. blithely pending dependencies use fluffily across the even pinto beans. carefully silent accoun]
-n_nationkey: [24], n_name: [UNITED STATES], n_regionkey: [1], n_comment: [y final packages. slow foxes cajole quickly. quickly silent platelets breach ironic accounts. unusual pinto be]
-n_nationkey: [8], n_name: [INDIA], n_regionkey: [2], n_comment: [ss excuses cajole slyly across the packages. deposits print aroun]
-n_nationkey: [9], n_name: [INDONESIA], n_regionkey: [2], n_comment: [ slyly express asymptotes. regular deposits haggle slyly. carefully ironic hockey players sleep blithely. carefull]
-n_nationkey: [12], n_name: [JAPAN], n_regionkey: [2], n_comment: [ously. final, express gifts cajole a]
-n_nationkey: [18], n_name: [CHINA], n_regionkey: [2], n_comment: [c dependencies. furiously express notornis sleep slyly regular accounts. ideas sleep. depos]
-n_nationkey: [21], n_name: [VIETNAM], n_regionkey: [2], n_comment: [hely enticingly express accounts. even, final ]
-n_nationkey: [6], n_name: [FRANCE], n_regionkey: [3], n_comment: [refully final requests. regular, ironi]
-n_nationkey: [7], n_name: [GERMANY], n_regionkey: [3], n_comment: [l platelets. regular accounts x-ray: unusual, regular acco]
-n_nationkey: [19], n_name: [ROMANIA], n_regionkey: [3], n_comment: [ular asymptotes are about the furious multipliers. express dependencies nag above the ironically ironic account]
-n_nationkey: [22], n_name: [RUSSIA], n_regionkey: [3], n_comment: [ requests against the platelets use never according to the quickly regular pint]
-n_nationkey: [23], n_name: [UNITED KINGDOM], n_regionkey: [3], n_comment: [eans boost carefully special requests. accounts are. carefull]
-n_nationkey: [4], n_name: [EGYPT], n_regionkey: [4], n_comment: [y above the carefully unusual theodolites. final dugouts are quickly across the furiously regular d]
-n_nationkey: [10], n_name: [IRAN], n_regionkey: [4], n_comment: [efully alongside of the slyly final dependencies. ]
-n_nationkey: [11], n_name: [IRAQ], n_regionkey: [4], n_comment: [nic deposits boost atop the quickly final requests? quickly regula]
-n_nationkey: [13], n_name: [JORDAN], n_regionkey: [4], n_comment: [ic deposits are blithely about the carefully regular pa]
-n_nationkey: [20], n_name: [SAUDI ARABIA], n_regionkey: [4], n_comment: [ts. silent requests haggle. closely express packages sleep across the blithely]
-
- scanned 25 recs 
-SortedFile::Close()
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test2
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	./
- 
-
- select test option: 
- 	 1. create sorted dbfile
- 	 2. scan a dbfile
- 	 3. run some query 
- 	 3
-
- select table: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. supplier 
-	 7. orders 
-	 8. lineitem 
- 	 1
-
- enter CNF predicate (when done press ctrl-D):
-	(n_regionkey = 4) AND (n_nationkey < 20)
-DBFile::Open - 1
-SortedFile::Open()
-SortedFile::MoveFirst ()
-SortedFile::MoveFirst ()
-	NumAtts =     2
-  0:     2 Int
-  1:     2 Int
-NumAtts =     2
-  0:     2 Int
-  1:     2 Int
-02
-n_nationkey: [4], n_name: [EGYPT], n_regionkey: [4], n_comment: [y above the carefully unusual theodolites. final dugouts are quickly across the furiously regular d]
-02
-n_nationkey: [10], n_name: [IRAN], n_regionkey: [4], n_comment: [efully alongside of the slyly final dependencies. ]
-02
-n_nationkey: [11], n_name: [IRAQ], n_regionkey: [4], n_comment: [nic deposits boost atop the quickly final requests? quickly regula]
-02
-n_nationkey: [13], n_name: [JORDAN], n_regionkey: [4], n_comment: [ic deposits are blithely about the carefully regular pa]
-02
-
- query over ./nation.bin returned 4 recs
-SortedFile::Close()
-
