@@ -56,7 +56,6 @@ void * SelectFile::sf_Runit () {
 			sf_in->out->Insert(&rec);
 	}
 	sf_in->out->ShutDown();
-
 }
 
 

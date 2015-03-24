@@ -94,7 +94,7 @@ void init_SF_c (char *pred_str, int numpgs) {
 // expected output: 31 records
 void q1 () {
 
-	char *pred_ps = "(ps_supplycost < 1.03)";
+	char *pred_ps = "(ps_supplycost < 1.08)";
 	init_SF_ps (pred_ps, 100);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps);
@@ -111,7 +111,7 @@ void q1 () {
 // expected output: 22 records
 void q2 () {
 
-	char *pred_p = "(p_retailprice > 931.01) AND (p_retailprice < 931.3)";
+	char *pred_p = "(p_retailprice > 931.01) AND (p_retailprice < 941.3)";
 	init_SF_p (pred_p, 100);
 
 	Project P_p;
@@ -206,7 +206,6 @@ void q4 () {
 			get_cnf (str_sum, &join_sch, func);
 			func.Print ();
 	T.Use_n_Pages (1);
-	J.Use_n_Pages (1);
 	SF_s.Run (dbf_s, _s, cnf_s, lit_s); 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
 	// int cnt_s = clear_pipe (_ps, ps->schema(), true);
