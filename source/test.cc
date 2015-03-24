@@ -178,7 +178,7 @@ void q4 () {
 	cout << " query4 \n";
 	char *pred_s = "(s_suppkey = s_suppkey)";
 	init_SF_s (pred_s, 100);
-	SF_s.Run (dbf_s, _s, cnf_s, lit_s); // 10k recs qualified
+	// SF_s.Run (dbf_s, _s, cnf_s, lit_s); // 10k recs qualified
 	// int cnts = clear_pipe (_s, s->schema(), true);
 	// cout << "\n\n query2 returned " << cnts << " records \n";
 	// return;
@@ -206,7 +206,8 @@ void q4 () {
 			get_cnf (str_sum, &join_sch, func);
 			func.Print ();
 	T.Use_n_Pages (1);
-
+	J.Use_n_Pages (1);
+	SF_s.Run (dbf_s, _s, cnf_s, lit_s); 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
 	// int cnt_s = clear_pipe (_ps, ps->schema(), true);
 	// cout << "\n\n query2 returned " << cnt_s << " records \n";
@@ -288,9 +289,13 @@ void q6 () {
 	Attribute joinatt[] = {IA,SA,SA,s_nationkey,SA,DA,SA,IA,IA,IA,ps_supplycost,SA};
 	Schema join_sch ("join_sch", outAtts, joinatt);
 
+	char *input = "(s_nationkey)";
+	OrderMaker *ord = new OrderMaker;
+	get_sort_order (input,  &join_sch , *ord);
+
 	GroupBy G;
 		// _s (input pipe)
-		Pipe _out (1);
+		Pipe _out (pipesz);
 		Function func;
 			char *str_sum = "(ps_supplycost)";
 			get_cnf (str_sum, &join_sch, func);
@@ -300,7 +305,7 @@ void q6 () {
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
-	G.Run (_s_ps, _out, grp_order, func);
+	G.Run (_s_ps, _out, *ord, func);
 
 	SF_ps.WaitUntilDone ();
 	J.WaitUntilDone ();

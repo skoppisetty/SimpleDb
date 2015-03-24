@@ -1,10 +1,10 @@
 Readme 
 =========
 
-Assignment 2 
+Assignment 3
 
-Part 1 - Implementation of BigQ Class - TPMMS Sort (Spring 2015 DBI)
-Part 2 - DBFile  using BigQ class and using binary search.
+implemention of set of below relational operations:
+SelectPipe, SelectFile, Project, Join, DuplicateRemoval, Sum, GroupBy, and WriteOut.
 
 TEAM:
 =========
@@ -16,13 +16,23 @@ Important Note:
 =========
 We tested with 10M  and 1GB data, but only included 10MB Data with the code.Please set the correct path if you wanna test with 1GB Data/ or your own data.
 
-Please make sure that the Data Path in the test.h is valid before you test.
+Please make sure that the Data Path in the test.cat and gtesting.cc is valid before you test.
 
-Current Settings:
+NOTE: PLEASE CHANGE THE DATAPATH SETTINGS IN "gtesting.cc" AND "test.cat" AND then run "./gtesting.o < 1.txt" TO GENERATE DBFILE BIN FILES FOR ALL TABLES.
+
+Current Settings in gtesting.cc:
 =========
-char *catalog_path = "../source/catalog"; 
+char *dbfile_dir = ""; // dir where binary heap files should be stored
 char *tpch_dir ="../DATA/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
-char *dbfile_dir = ""; 
+char *catalog_path = "../source/catalog"; // full path of the catalog file
+
+
+
+Current Settings in test.cat:
+=========
+../source/catalog
+
+../DATA/10M/
 
 
 Folder Structure:
@@ -42,27 +52,15 @@ starting from the root folder
 1. make clean				// Clean any previously compiled code 
 2. make all					// Compile all the files necessary  
 3. cd bin
-4. ./test1					// to run Part1 test cases
-5. ./test2 					// to run Part2 test cases
+4. ./gtesting.o < 1.txt		// to create and load DBfiles for all the tables
+5. ./test [1-6]				// to run the different queries in test.cc
 
-5. sh sorttest.sh  // only for Part1 		
-// if you wanna do complete automated testing for following sortorders, please run above shell script - Settings are in the /bin/testcases folder
-
-dbfile      |  sortby                                  |  CNF
----------------------------------------------------------------------------------
-region      |  r_name 	 	                       | (r_name)
-       
-partsupp    |  ps_suppkey, ps_partkey 		       | (ps_suppkey) AND (ps_partkey)
-
-lineitem    |  l_shipdate, l_extendedprice, l_quantity | (l_shipdate) AND 
-							 (l_extendedprice) AND 
-							 (l_quantity)
-
+NOTE: PLEASE CHANGE THE DATAPATH SETTINGS IN gtesting.cc AND test.cat AND then run "./gtesting.o < 1.txt" TO GENERATE DBFILE BIN FILES FOR ALL TABLES.
 
 Executable Files:
 ========
-2. test1 - test script to run the code (sort using BigQ) for various database tables.
-3. test2 - test script to run queries to check if DBFile is being sorted using BigQ class.
+2. gtesting.o 
+3. test
 
 
 Settings:
@@ -73,9 +71,10 @@ The following variables control the various file locations and they are declared
 	o catalog_path -- this stores the catalog file path. By default this is set to "source" folder. 
 
 
-Results with 1G Data for PART 1
+Results with 1G Data 
 =========
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ sh sorttest.sh 
+
+TestCase 1 Results:
  
 ** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
  catalog location: 	../source/catalog
@@ -83,34 +82,36 @@ suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ sh sorttest.sh
  heap files dir: 	
  
 
- select test option: 
- 	 1. sort 
- 	 2. sort + display 
- 	 3. sort + write 
-	 
- select dbfile to use: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. orders 
-	 7. lineitem 
- 	 	
- specify runlength:
-	 
- specify sort ordering (when done press ctrl-D):
-	  
- tpch file will be loaded from ../DATA/1G/region.tbl
- producer: opened DBFile region.bin
- producer: inserted 5 recs into the pipe
+HeapFile::Open
+ps_partkey: [6333], ps_suppkey: [6334], ps_availqty: [3711], ps_supplycost: [1.01], ps_comment: [s use slyly. fluffily express requests wake carefully ironic packages]
+ps_partkey: [9097], ps_suppkey: [4098], ps_availqty: [3012], ps_supplycost: [1.01], ps_comment: [s the bold pinto beans cajole carefully after the slyly unusual instructions. slyly special packages above the unusual, bold packages cajole blithely even Tiresias. theodolites among the foxes are]
+ps_partkey: [20468], ps_suppkey: [469], ps_availqty: [6884], ps_supplycost: [1], ps_comment: [furiously among the slyly ironic instructions. final, unusual packages wake slyly. final accounts cajole. deposits above the i]
+ps_partkey: [27115], ps_suppkey: [9618], ps_availqty: [7966], ps_supplycost: [1.02], ps_comment: [e regular, ironic dugouts. slyly special requests cajole quickly across the blithely express requests. deposits unwind carefully pending theodolites. pinto beans about the even, regular theodolite]
+ps_partkey: [34494], ps_suppkey: [9501], ps_availqty: [7438], ps_supplycost: [1.02], ps_comment: [egular excuses. final, regular deposits wake. pinto beans according to th]
+ps_partkey: [43172], ps_suppkey: [685], ps_availqty: [6600], ps_supplycost: [1.01], ps_comment: [ites integrate blithely above the slyly regular instructions. asymptotes besides the regular, even accounts haggle carefully slyly bold requests. even pinto beans ]
+ps_partkey: [43764], ps_suppkey: [1277], ps_availqty: [2344], ps_supplycost: [1.02], ps_comment: [; furious, ironic requests nag furiously against the silent packages-- furiously pending pinto beans use blithely careful]
+ps_partkey: [51671], ps_suppkey: [4177], ps_availqty: [3399], ps_supplycost: [1.02], ps_comment: [iously. blithely bold requests haggle furiously. slyly final requests sleep. final, final theodolites cajole. accounts play about the slyly unusual requests. bold courts haggle. bol]
+ps_partkey: [60953], ps_suppkey: [954], ps_availqty: [8611], ps_supplycost: [1.01], ps_comment: [ully even dolphins wake carefully about the slyly final pinto beans]
+ps_partkey: [61707], ps_suppkey: [1708], ps_availqty: [3178], ps_supplycost: [1.02], ps_comment: [ide of the unusual, regular excuses. unusual, special packages are carefully across the even theodolites: furi]
+ps_partkey: [71984], ps_suppkey: [6999], ps_availqty: [6016], ps_supplycost: [1.01], ps_comment: [eodolites are blithely across the special requests. quickly regular excuses are furiously against the slyly final accou]
+ps_partkey: [74375], ps_suppkey: [6883], ps_availqty: [864], ps_supplycost: [1.02], ps_comment: [lithely express asymptotes nag regular packages. special, ruthless instructions against the furiously ruthless packages boost around the packages. slyly bold accounts use. furiously ironic pa]
+ps_partkey: [76994], ps_suppkey: [9502], ps_availqty: [9712], ps_supplycost: [1], ps_comment: [. carefully ironic platelets cajole furiously among the furiously regular asymptotes. furiously express asymptotes wake caref]
+ps_partkey: [93653], ps_suppkey: [3654], ps_availqty: [4473], ps_supplycost: [1.02], ps_comment: [ of the carefully final requests. bold deposits are slyly. instructions nod furiously instructions. careful]
+ps_partkey: [102497], ps_suppkey: [2498], ps_availqty: [6491], ps_supplycost: [1], ps_comment: [fully final accounts. even accounts after the carefully final accounts haggle according to the blithely special requests. carefully unusual]
+ps_partkey: [122543], ps_suppkey: [5056], ps_availqty: [5753], ps_supplycost: [1], ps_comment: [e the quickly ironic dependencies. slyly ironic accounts]
+ps_partkey: [139711], ps_suppkey: [9712], ps_availqty: [4286], ps_supplycost: [1.01], ps_comment: [ully unusual escapades sleep along the special instructions. final, bold ideas across the slyly ironic ideas sleep dependenc]
+ps_partkey: [155112], ps_suppkey: [5113], ps_availqty: [7635], ps_supplycost: [1], ps_comment: [refully bold packages. special somas cajole according to the foxes. furiously even accou]
+ps_partkey: [158093], ps_suppkey: [5639], ps_availqty: [3751], ps_supplycost: [1], ps_comment: [iously unusual gifts maintain quickly according to the slyly pending deposits. quickly ]
+ps_partkey: [193659], ps_suppkey: [6179], ps_availqty: [6606], ps_supplycost: [1.01], ps_comment: [can haggle. quickly express packages are blithely. even requests against the silent accounts sleep special packages. ironic ideas according to the furiously regular dolphins use quickly plate]
+ps_partkey: [193981], ps_suppkey: [3982], ps_availqty: [619], ps_supplycost: [1.01], ps_comment: [ic accounts after the unusual, regular instructions grow carefully around the blithely unusual dependencies. pending accounts along the bl]
 
-TPMMS Merge start
 
-TPMMS Merge done
+ query1 returned 21 records 
+cleaning up
+cleaning done
 
- consumer: removed 5 recs from the pipe
- consumer: 5 recs out of 5 recs in sorted order 
+
+Testcase 2 Results:
  
 ** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
  catalog location: 	../source/catalog
@@ -118,320 +119,476 @@ TPMMS Merge done
  heap files dir: 	
  
 
- select test option: 
- 	 1. sort 
- 	 2. sort + display 
- 	 3. sort + write 
-	 
- select dbfile to use: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. orders 
-	 7. lineitem 
- 	 	
- specify runlength:
-	 
- specify sort ordering (when done press ctrl-D):
-	  
- tpch file will be loaded from ../DATA/1G/lineitem.tbl
- producer: opened DBFile lineitem.bin
- producer: 100000
- producer: 200000
- producer: 300000
- producer: 400000
- producer: 500000
- producer: 600000
- producer: 700000
- producer: 800000
- producer: 900000
- producer: 1000000
- producer: 1100000
- producer: 1200000
- producer: 1300000
- producer: 1400000
- producer: 1500000
- producer: 1600000
- producer: 1700000
- producer: 1800000
- producer: 1900000
- producer: 2000000
- producer: 2100000
- producer: 2200000
- producer: 2300000
- producer: 2400000
- producer: 2500000
- producer: 2600000
- producer: 2700000
- producer: 2800000
- producer: 2900000
- producer: 3000000
- producer: 3100000
- producer: 3200000
- producer: 3300000
- producer: 3400000
- producer: 3500000
- producer: 3600000
- producer: 3700000
- producer: 3800000
- producer: 3900000
- producer: 4000000
- producer: 4100000
- producer: 4200000
- producer: 4300000
- producer: 4400000
- producer: 4500000
- producer: 4600000
- producer: 4700000
- producer: 4800000
- producer: 4900000
- producer: 5000000
- producer: 5100000
- producer: 5200000
- producer: 5300000
- producer: 5400000
- producer: 5500000
- producer: 5600000
- producer: 5700000
- producer: 5800000
- producer: 5900000
- producer: 6000000
- producer: inserted 6001215 recs into the pipe
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- consumer: removed 6001215 recs from the pipe
- consumer: 6001215 recs out of 6001215 recs in sorted order 
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
- select test option: 
- 	 1. sort 
- 	 2. sort + display 
- 	 3. sort + write 
-	 
- select dbfile to use: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. orders 
-	 7. lineitem 
- 	 	
- specify runlength:
-	 
- specify sort ordering (when done press ctrl-D):
-	  
- tpch file will be loaded from ../DATA/1G/partsupp.tbl
- producer: opened DBFile partsupp.bin
- producer: 100000
- producer: 200000
- producer: 300000
- producer: 400000
- producer: 500000
- producer: 600000
- producer: 700000
- producer: 800000
- producer: inserted 800000 recs into the pipe
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- consumer: removed 800000 recs from the pipe
- consumer: 800000 recs out of 800000 recs in sorted order 
-
-Results for PART 2:
-=====
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test2
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	./
- 
-
- select test option: 
- 	 1. create sorted dbfile
- 	 2. scan a dbfile
- 	 3. run some query 
- 	 1
-
- select table: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. supplier 
-	 7. orders 
-	 8. lineitem 
- 	 1
-
- specify sort ordering (when done press ctrl-D):
-	 (n_regionkey) AND (n_nationkey)
-Printing ordermaker
-NumAtts =     2
-  0:     2 Int
-  1:     0 Int
-	
- specify runlength:
-	 2
-
- output to dbfile : ./nation.bin
-open metadata dile, f_type = 1
-name = ./nation.bin.metadata
-DBFile::Create() - 
-NumAtts =     2
-  0:     2 Int
-  1:     0 Int
-SortedFile::Close()
- input from file : ../DATA/10M/nation.tbl
-
- select option for : ./nation.bin
- 	 1. add a few (1 to 1k recs)
- 	 2. add a lot (1k to 1e+06 recs) 
- 	 3. run some query 
- 	 2
-opening
-DBFile::Open - 1
-SortedFile::Open()
-SortedFile::MoveFirst ()
-Adding records
+HeapFile::Open
 0
-SortedFile::Close()
-BigQ constructor 
-NumAtts =     2
-  0:     2 Int
-  1:     0 Int
+1
+7
+int: [31], string: [grey ghost steel maroon moccasin], double: [931.03]
+int: [1030], string: [green lace medium burnished ivory], double: [931.03]
+int: [2029], string: [rosy blush forest violet frosted], double: [931.02]
+int: [3028], string: [yellow medium cornflower green misty], double: [931.02]
+int: [4027], string: [sky indian lawn chiffon powder], double: [931.02]
+int: [5026], string: [blanched blue maroon lawn wheat], double: [931.02]
+int: [6025], string: [blanched lime gainsboro aquamarine floral], double: [931.02]
+int: [7024], string: [goldenrod rosy chiffon firebrick hot], double: [931.02]
+int: [8023], string: [green dodger peru cornsilk pink], double: [931.02]
+int: [9022], string: [beige ghost dark floral pale], double: [931.02]
+int: [10021], string: [brown chartreuse goldenrod seashell burnished], double: [931.02]
+int: [11020], string: [magenta medium powder khaki peach], double: [931.02]
+
+
+ query2 returned 12 records 
+cleaning up
+cleaning done
+
+
+Testcase 3 Results:
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/1G/
+ heap files dir: 	
+ 
+
+HeapFile::Open
+double: [9.24623e+07]
+double: [9.24623e+07]
+
+
+ query3 returned 1 records 
+cleaning up
+cleaning done
+
+
+Testcase 4 Results
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/1G/
+ heap files dir: 	
+ 
+
+ query4 
+HeapFile::Open
+HeapFile::Open
+name = ./join_left_temp.bin.metadata
+name = ./join_right_temp.bin.metadata
+0
+0
 BigQ started
 
 TPMMS Merge start
 
 TPMMS Merge done
 
+BigQ started
 
-	 added 25 recs..so far 25
+TPMMS Merge start
 
- create finished.. 25 recs inserted
+TPMMS Merge done
+
+double: [4.97209e+06]
+double: [4.97209e+06]
+ query4 returned 1 recs 
+cleaning up
+cleaning done
 
 
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test2
+
+Testcase 5 (Please see ps.w.tmp containing 9996 records)
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/1G/
+ heap files dir: 	
+ 
+
+HeapFile::Open
+1
+name = ./temp.bin.metadata
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+ query5 finished..output written to file ps.w.tmp
+cleaning up
+cleaning done
+
+Testcase 6 
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/1G/
+ heap files dir: 	
+ 
+
+ query6 
+HeapFile::Open
+HeapFile::Open
+name = ./group_temp.bin.metadata
+name = ./join_left_temp.bin.metadata
+name = ./join_right_temp.bin.metadata
+0
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+double: [204379]
+double: [203965]
+double: [204268]
+double: [221111]
+double: [206017]
+double: [192866]
+double: [188431]
+double: [187810]
+double: [195760]
+double: [206286]
+double: [191590]
+double: [222131]
+double: [191148]
+double: [181334]
+double: [188816]
+double: [184488]
+double: [192989]
+double: [220938]
+double: [208204]
+double: [204125]
+double: [197406]
+double: [192906]
+double: [202730]
+double: [195911]
+double: [204379]
+double: [203965]
+double: [204268]
+double: [221111]
+double: [206017]
+double: [192866]
+double: [188431]
+double: [187810]
+double: [195760]
+double: [206286]
+double: [191590]
+double: [222131]
+double: [191148]
+double: [181334]
+double: [188816]
+double: [184488]
+double: [192989]
+double: [220938]
+double: [208204]
+double: [204125]
+double: [197406]
+double: [192906]
+double: [202730]
+double: [195911]
+double: [185633]
+ query6 returned sum for 25 groups (expected 25 groups)
+cleaning up
+cleaning done
+
+
+
+Results with 10M Data 
+=========
+
+Generating required database bin files before starting test
+
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./gtesting.o < 1.txt 
+Running main() from gtest_main.cc
+[==========] Running 7 tests from 1 test case.
+[----------] Global test environment set-up.
+[----------] 7 tests from lineitem_test
+[ RUN      ] lineitem_test.Open_test
  
 ** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
  catalog location: 	../source/catalog
  tpch files dir: 	../DATA/10M/
- heap files dir: 	./
+ heap files dir: 	
  
 
- select test option: 
- 	 1. create sorted dbfile
- 	 2. scan a dbfile
- 	 3. run some query 
- 	 2
+name = lineitem.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/lineitem.tbl
+HeapFile::Load
+[       OK ] lineitem_test.Open_test (249 ms)
+[ RUN      ] lineitem_test.Load_test
+HeapFile::Open
+ selected 60175 recs 
+[       OK ] lineitem_test.Load_test (15 ms)
+[ RUN      ] lineitem_test.Add_test
+HeapFile::Open
+[       OK ] lineitem_test.Add_test (1 ms)
+[ RUN      ] lineitem_test.Write_test
+HeapFile::Open
+ selected 60176 recs 
+[       OK ] lineitem_test.Write_test (16 ms)
+[ RUN      ] lineitem_test.Getnext_test
+HeapFile::Open
+Enter in your CNF: ( Att 0 from left record > Att 0 from literal record (Int))  AND
+( Att 0 from left record < Att 1 from literal record (Int)) 
+[       OK ] lineitem_test.Getnext_test (29 ms)
+[ RUN      ] lineitem_test.Mock_Open_test
+name = lineitem.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/lineitem.tbl
+HeapFile::Load
+[       OK ] lineitem_test.Mock_Open_test (167 ms)
+[ RUN      ] lineitem_test.createallbins
+name = supplier.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/supplier.tbl
+HeapFile::Load
+name = partsupp.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/partsupp.tbl
+HeapFile::Load
+name = part.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/part.tbl
+HeapFile::Load
+name = nation.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/nation.tbl
+HeapFile::Load
+name = customer.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/customer.tbl
+HeapFile::Load
+name = orders.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/orders.tbl
+HeapFile::Load
+name = region.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/region.tbl
+HeapFile::Load
+name = lineitem.bin.metadata
+ HeapFile::Create
+Loading data from ../DATA/10M/lineitem.tbl
+HeapFile::Load
+[       OK ] lineitem_test.createallbins (505 ms)
+[----------] 7 tests from lineitem_test (982 ms total)
 
- select table: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. supplier 
-	 7. orders 
-	 8. lineitem 
- 	 1
- scan : ./nation.bin
-DBFile::Open - 1
-SortedFile::Open()
-SortedFile::MoveFirst ()
-SortedFile::MoveFirst ()
-	n_nationkey: [0], n_name: [ALGERIA], n_regionkey: [0], n_comment: [ haggle. carefully final deposits detect slyly agai]
-n_nationkey: [5], n_name: [ETHIOPIA], n_regionkey: [0], n_comment: [ven packages wake quickly. regu]
-n_nationkey: [14], n_name: [KENYA], n_regionkey: [0], n_comment: [ pending excuses haggle furiously deposits. pending, express pinto beans wake fluffily past t]
-n_nationkey: [15], n_name: [MOROCCO], n_regionkey: [0], n_comment: [rns. blithely bold courts among the closely regular packages use furiously bold platelets?]
-n_nationkey: [16], n_name: [MOZAMBIQUE], n_regionkey: [0], n_comment: [s. ironic, unusual asymptotes wake blithely r]
-n_nationkey: [1], n_name: [ARGENTINA], n_regionkey: [1], n_comment: [al foxes promise slyly according to the regular accounts. bold requests alon]
-n_nationkey: [2], n_name: [BRAZIL], n_regionkey: [1], n_comment: [y alongside of the pending deposits. carefully special packages are about the ironic forges. slyly special ]
-n_nationkey: [3], n_name: [CANADA], n_regionkey: [1], n_comment: [eas hang ironic, silent packages. slyly regular packages are furiously over the tithes. fluffily bold]
-n_nationkey: [17], n_name: [PERU], n_regionkey: [1], n_comment: [platelets. blithely pending dependencies use fluffily across the even pinto beans. carefully silent accoun]
-n_nationkey: [24], n_name: [UNITED STATES], n_regionkey: [1], n_comment: [y final packages. slow foxes cajole quickly. quickly silent platelets breach ironic accounts. unusual pinto be]
-n_nationkey: [8], n_name: [INDIA], n_regionkey: [2], n_comment: [ss excuses cajole slyly across the packages. deposits print aroun]
-n_nationkey: [9], n_name: [INDONESIA], n_regionkey: [2], n_comment: [ slyly express asymptotes. regular deposits haggle slyly. carefully ironic hockey players sleep blithely. carefull]
-n_nationkey: [12], n_name: [JAPAN], n_regionkey: [2], n_comment: [ously. final, express gifts cajole a]
-n_nationkey: [18], n_name: [CHINA], n_regionkey: [2], n_comment: [c dependencies. furiously express notornis sleep slyly regular accounts. ideas sleep. depos]
-n_nationkey: [21], n_name: [VIETNAM], n_regionkey: [2], n_comment: [hely enticingly express accounts. even, final ]
-n_nationkey: [6], n_name: [FRANCE], n_regionkey: [3], n_comment: [refully final requests. regular, ironi]
-n_nationkey: [7], n_name: [GERMANY], n_regionkey: [3], n_comment: [l platelets. regular accounts x-ray: unusual, regular acco]
-n_nationkey: [19], n_name: [ROMANIA], n_regionkey: [3], n_comment: [ular asymptotes are about the furious multipliers. express dependencies nag above the ironically ironic account]
-n_nationkey: [22], n_name: [RUSSIA], n_regionkey: [3], n_comment: [ requests against the platelets use never according to the quickly regular pint]
-n_nationkey: [23], n_name: [UNITED KINGDOM], n_regionkey: [3], n_comment: [eans boost carefully special requests. accounts are. carefull]
-n_nationkey: [4], n_name: [EGYPT], n_regionkey: [4], n_comment: [y above the carefully unusual theodolites. final dugouts are quickly across the furiously regular d]
-n_nationkey: [10], n_name: [IRAN], n_regionkey: [4], n_comment: [efully alongside of the slyly final dependencies. ]
-n_nationkey: [11], n_name: [IRAQ], n_regionkey: [4], n_comment: [nic deposits boost atop the quickly final requests? quickly regula]
-n_nationkey: [13], n_name: [JORDAN], n_regionkey: [4], n_comment: [ic deposits are blithely about the carefully regular pa]
-n_nationkey: [20], n_name: [SAUDI ARABIA], n_regionkey: [4], n_comment: [ts. silent requests haggle. closely express packages sleep across the blithely]
-
- scanned 25 recs 
-SortedFile::Close()
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test2
+[----------] Global test environment tear-down
+[==========] 7 tests from 1 test case ran. (982 ms total)
+[  PASSED  ] 7 tests.
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 1
  
 ** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
  catalog location: 	../source/catalog
  tpch files dir: 	../DATA/10M/
- heap files dir: 	./
+ heap files dir: 	
  
 
- select test option: 
- 	 1. create sorted dbfile
- 	 2. scan a dbfile
- 	 3. run some query 
- 	 3
+HeapFile::Open
 
- select table: 
-	 1. nation 
-	 2. region 
-	 3. customer 
-	 4. part 
-	 5. partsupp 
-	 6. supplier 
-	 7. orders 
-	 8. lineitem 
- 	 1
 
- enter CNF predicate (when done press ctrl-D):
-	(n_regionkey = 4) AND (n_nationkey < 20)
-DBFile::Open - 1
-SortedFile::Open()
-SortedFile::MoveFirst ()
-SortedFile::MoveFirst ()
-	NumAtts =     2
-  0:     2 Int
-  1:     2 Int
-NumAtts =     2
-  0:     2 Int
-  1:     2 Int
-02
-n_nationkey: [4], n_name: [EGYPT], n_regionkey: [4], n_comment: [y above the carefully unusual theodolites. final dugouts are quickly across the furiously regular d]
-02
-n_nationkey: [10], n_name: [IRAN], n_regionkey: [4], n_comment: [efully alongside of the slyly final dependencies. ]
-02
-n_nationkey: [11], n_name: [IRAQ], n_regionkey: [4], n_comment: [nic deposits boost atop the quickly final requests? quickly regula]
-02
-n_nationkey: [13], n_name: [JORDAN], n_regionkey: [4], n_comment: [ic deposits are blithely about the carefully regular pa]
-02
+ query1 returned 0 records 
+cleaning up
+cleaning done
 
- query over ./nation.bin returned 4 recs
-SortedFile::Close()
+
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 2
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/10M/
+ heap files dir: 	
+ 
+
+HeapFile::Open
+0
+1
+7
+int: [31], string: [grey ghost steel maroon moccasin], double: [931.03]
+int: [1030], string: [green lace medium burnished ivory], double: [931.03]
+
+
+ query2 returned 2 records 
+cleaning up
+cleaning done
+
+
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 3
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/10M/
+ heap files dir: 	
+ 
+
+HeapFile::Open
+double: [821906]
+double: [821906]
+
+
+ query3 returned 1 records 
+cleaning up
+cleaning done
+
+
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 4
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/10M/
+ heap files dir: 	
+ 
+
+ query4 
+HeapFile::Open
+HeapFile::Open
+name = ./join_left_temp.bin.metadata
+name = ./join_right_temp.bin.metadata
+0
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+double: [52699.7]
+double: [52699.7]
+ query4 returned 1 recs 
+cleaning up
+cleaning done
+
+
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 5
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/10M/
+ heap files dir: 	
+ 
+
+HeapFile::Open
+1
+name = ./temp.bin.metadata
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+ query5 finished..output written to file ps.w.tmp
+cleaning up
+cleaning done
+
+
+suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 6
+ 
+** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
+ catalog location: 	../source/catalog
+ tpch files dir: 	../DATA/10M/
+ heap files dir: 	
+ 
+
+ query6 
+HeapFile::Open
+HeapFile::Open
+name = ./group_temp.bin.metadata
+name = ./join_left_temp.bin.metadata
+name = ./join_right_temp.bin.metadata
+0
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+0
+BigQ started
+
+TPMMS Merge start
+
+TPMMS Merge done
+
+double: [1841.38]
+double: [1155.09]
+double: [1382.72]
+double: [1411.46]
+double: [2324.9]
+double: [2134.05]
+double: [662.2]
+double: [2326.06]
+double: [1996.33]
+double: [4001.75]
+double: [786.03]
+double: [560.7]
+double: [1661.72]
+double: [496.2]
+double: [2445.8]
+double: [812.47]
+double: [4228.17]
+double: [2286.58]
+double: [4845.09]
+double: [2708.84]
+double: [947.99]
+double: [3073.68]
+double: [3626.44]
+double: [2267.9]
+double: [1841.38]
+double: [1155.09]
+double: [1382.72]
+double: [1411.46]
+double: [2324.9]
+double: [2134.05]
+double: [662.2]
+double: [2326.06]
+double: [1996.33]
+double: [4001.75]
+double: [786.03]
+double: [560.7]
+double: [1661.72]
+double: [496.2]
+double: [2445.8]
+double: [812.47]
+double: [4228.17]
+double: [2286.58]
+double: [4845.09]
+double: [2708.84]
+double: [947.99]
+double: [3073.68]
+double: [3626.44]
+double: [2267.9]
+double: [5253.96]
+ query6 returned sum for 25 groups (expected 25 groups)
+cleaning up
+cleaning done
+
 

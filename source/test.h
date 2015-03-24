@@ -119,6 +119,20 @@ public:
 	}
 };
 
+void get_sort_order (char* input, Schema *left , OrderMaker &sortorder) {
+	init_lexical_parser (input);
+	// cout << "\n specify sort ordering (when done press ctrl-D):\n\t ";
+		if (yyparse() != 0) {
+		cout << " Error: can't parse your CNF \n";
+		exit (1);
+	}
+	Record literal;
+	CNF sort_pred;
+	sort_pred.GrowFromParseTree (final, left, literal); // constructs CNF predicate
+	OrderMaker dummy;
+	sort_pred.GetSortOrders (sortorder, dummy);
+}
+	
 void get_cnf (char *input, Schema *left, CNF &cnf_pred, Record &literal) {
 	init_lexical_parser (input);
   	if (yyparse() != 0) {
