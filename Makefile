@@ -62,8 +62,8 @@ test1: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o D
 test2: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o DBFile.o HeapFile.o SortedFile.o y.tab.o lex.yy.o test2.o 
 	$(CC) -o $(BIN)test2 $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o  $(BIN)BigQ.o $(BIN)Pipe.o  $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)test2.o -lfl $(LDFLAGS)
 
-test: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o RelOp.o Function.o yyfunc.tab.o lex.yyfunc.o HeapFile.o SortedFile.o test.o
-	$(CC) -o $(BIN)test $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)yyfunc.tab.o $(BIN)lex.yyfunc.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)test.o -lfl $(LDFLAGS)
+test: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o RelOp.o Function.o yyfunc.tab.o lex.yyfunc.o HeapFile.o SortedFile.o Statistics.o test.o
+	$(CC) -o $(BIN)test $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)yyfunc.tab.o $(BIN)lex.yyfunc.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)Statistics.o $(BIN)test.o -lfl $(LDFLAGS)
 
 main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o RelOp.o Function.o yyfunc.tab.o lex.yyfunc.o HeapFile.o SortedFile.o main.o
 	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)yyfunc.tab.o $(BIN)lex.yyfunc.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)main.o -lfl $(LDFLAGS)
@@ -81,6 +81,9 @@ test2.o: $(SOURCE)test2.cc
 	$(CC) -g -c  $< -o $(BIN)$@ $(LDFLAGS)
 
 main.o: $(SOURCE)main.cc
+	$(CC) -g -c  $< -o $(BIN)$@
+
+Statistics.o: $(SOURCE)Statistics.cc
 	$(CC) -g -c  $< -o $(BIN)$@
  	
 Comparison.o: $(SOURCE)Comparison.cc
