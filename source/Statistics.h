@@ -1,11 +1,36 @@
 #ifndef STATISTICS_
 #define STATISTICS_
 #include "ParseTree.h"
+#include <map>
+#include <string>
+
+using namespace std;
+
+class RelInfo
+{
+private:
+	// typedef long long int tupletype;
+public:
+	int numTuples;
+	map<string,int> AttInfo;
+	RelInfo(int num){
+		numTuples = num;
+	}
+	void AddAtt(string att, int num){
+		AttInfo[att]=num;
+	}
+
+};
 
 
 class Statistics
 {
+private:
+	// long long int numTuples;
+	
+
 public:
+	map<string,RelInfo> rels;
 	Statistics();
 	Statistics(Statistics &copyMe);	 // Performs deep copy
 	~Statistics();
@@ -22,5 +47,6 @@ public:
 	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
 };
+
 
 #endif
