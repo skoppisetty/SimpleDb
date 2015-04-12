@@ -161,7 +161,7 @@ void Statistics::CheckRelations(char *relNames[],int numToJoin){
 void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin){
 	// # todo
 	// Parsetree check
-	CheckParsetree(parseTree);
+	// CheckParsetree(parseTree);
 	// relations check
 	CheckRelations(relNames,numToJoin);
 
@@ -232,7 +232,7 @@ double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numT
 	}
 	// # todo
 	// Parsetree check
-	CheckParsetree(parseTree);
+	// CheckParsetree(parseTree);
 	// relations check
 	CheckRelations(relNames,numToJoin);
 
@@ -324,7 +324,11 @@ double Statistics::EstimateResult(struct AndList *p_And){
                         case_join = true;
                         string lattr(leftop->value);
                         string rattr(rightop->value);
-                        cout << lattr << " " << rattr << endl;
+                        // cout << lattr << " " << rattr << endl;
+                        // for(auto& i:attribute_stats){
+                        // 	cout << i.first << " " << i.second << endl;
+                        // }
+
                         string lrel = attribute_stats[lattr];
                         string rrel = attribute_stats[rattr];
                         cout << lrel << " " << rrel << endl;
@@ -403,10 +407,13 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 					if(independent){
 	 						double prob = 1.0l - (1.0l/3.0l);
  							ORresult *= prob;
+ 							cout << "independent " << ORresult << endl;
 	 					}
 	 					else{
+
 							double prob = 1.0l/3.0l;
  							ORresult += prob;
+ 							cout << "dependent " << ORresult << endl;
 	 					}
 	 					// cout << "Result after " << attribute << " "  << ORresult<< endl;
 	 					break;
