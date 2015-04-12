@@ -136,7 +136,7 @@ void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJo
 			joinRelInfo.copyAttrs(relation_stats[relNames[i]]);
 		}
 
-		joinRelInfo.print();
+		// joinRelInfo.print();
 		relation_stats[newrelation]=joinRelInfo;
 
 		vector<string> attrs = CheckParsetree(parseTree);
@@ -196,7 +196,7 @@ bool Statistics::Case_Join(struct AndList *p_And){
 	 			if( (leftop != NULL && (leftop->code == NAME)) &&
 		 			(rightop != NULL && (rightop->code == NAME) ) && comp->code == EQUALS) {
 					// Join sucks
-					cout << "Case join" << endl;
+					// cout << "Case join" << endl;
 					case_join = true;   
 					return case_join;                   	
 				}
@@ -263,7 +263,7 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 					if( (leftop != NULL && (leftop->code == NAME)) &&
 	 						 (rightop != NULL && (rightop->code == NAME) )) {
 	 						 	// Join sucks
-	 						cout << "Case join" << endl;
+		 						// cout << "Case join" << endl;
                         case_join = true;
                         string lattr(leftop->value);
                         string rattr(rightop->value);
@@ -278,10 +278,10 @@ double Statistics::EstimateResult(struct AndList *p_And){
                         int rRelSize = relation_stats[rrel].numTuples;
                         int rDistinct = relation_stats[rrel].AttInfo[rattr];
 
-                        double numerator   = lRelSize * rRelSize;
+                        // cout << lRelSize << " " << lDistinct << " " << rRelSize << " " << rDistinct << endl;
                         double denominator = max(lDistinct,rDistinct);
-
-                        ORresult += (numerator/denominator);
+                        ORresult += (lRelSize * (rRelSize / denominator));
+                        // cout << "Joing : " << ORresult << endl;
                       	
 	 					}
 	 					else{
