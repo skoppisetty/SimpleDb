@@ -18,7 +18,7 @@ void Statistics::AddRel(char *relName, int numTuples)
 	RelInfo newrelinfo;
 	newrelinfo.SetTuples(numTuples);
 	relation_stats[relation] = newrelinfo;
-	newrelinfo.print();
+	// newrelinfo.print();
 }
 
 void Statistics::AddAtt(char *relName, char *attName, int numDistincts)
@@ -31,7 +31,7 @@ void Statistics::AddAtt(char *relName, char *attName, int numDistincts)
 		relation_stats[relation].AddAtt(attribute,numDistincts);
 	}
 	attribute_stats[attribute] = relation;
-	relation_stats[relation].print();
+	// relation_stats[relation].print();
 }
 
 void Statistics::CopyRel(char *oldName, char *newName)
@@ -180,7 +180,7 @@ double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numT
 	CheckRelations(relNames,numToJoin);
 
 	double result = EstimateResult(parseTree);
-  	cout << "estimated result is " << result << endl;
+  	// cout << "estimated result is " << result << endl;
   	return result;
 }
 
@@ -230,7 +230,7 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 			count++;
 	 			string attribute(comp->left->value); // get left attribute val
 	 			orset.insert(attribute);	// add to or set
-	 			cout << "Inserting attribute: " << attribute << endl;
+	 			// cout << "Inserting attribute: " << attribute << endl;
 	 		}
 	 		p_or = p_or->rightOr; // set next right or
 	 	}
@@ -242,7 +242,7 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 		single = true;
 	 	}
 
-	 	cout << "Independent: " << independent << "Single: " << single << endl;
+	 	// cout << "Independent: " << independent << "Single: " << single << endl;
 
 	 	p_or = p_And->left;
 	 	double ORresult = 0.0l;
@@ -259,12 +259,11 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 			Operand *rightop = comp->right;
 	 			switch(comp->code){
 	 				case EQUALS:
-	 					cout << "Equals" << endl;
+	 					// cout << "Equals" << endl;
 	 					if( (leftop != NULL && (leftop->code == NAME)) &&
 	 						 (rightop != NULL && (rightop->code == NAME) )) {
 	 						 	// Join sucks
 	 						cout << "Case join" << endl;
-	 						clog << endl << "join case estimation" << endl << endl;
                         case_join = true;
                         string lattr(leftop->value);
                         string rattr(rightop->value);
@@ -322,7 +321,7 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 							double prob = (1.0l/distinct);
 	 								ORresult += prob;
 	 						}
-	 						cout << "Result after " << attribute << " "  << ORresult<< endl;
+	 						// cout << "Result after " << attribute << " "  << ORresult<< endl;
 
 	 					}
 	 					break;
@@ -350,7 +349,7 @@ double Statistics::EstimateResult(struct AndList *p_And){
 							double prob = 1.0l/3.0l;
  							ORresult += prob;
 	 					}
-	 					cout << "Result after " << attribute << " "  << ORresult<< endl;
+	 					// cout << "Result after " << attribute << " "  << ORresult<< endl;
 	 					break;
 	 			}
 	 			if (!case_join){
@@ -371,11 +370,11 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 	}
 
 	 	if(independent){
-	 		cout << "independent " << ORresult << endl;
+	 		// cout << "independent " << ORresult << endl;
 	 		result *= (1 - ORresult);
 	 	}
 	 	else{
-	 		cout << "dependent " << ORresult << endl;
+	 		// cout << "dependent " << ORresult << endl;
 	 		result *=  ORresult;
 	 	}
 
