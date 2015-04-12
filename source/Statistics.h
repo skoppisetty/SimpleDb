@@ -6,7 +6,7 @@
 #include <set>
 #include <vector>
 #include <iostream>
-
+#include <fstream>
 using namespace std;
 
 class RelInfo
@@ -33,6 +33,35 @@ public:
 	void copyAttrs(RelInfo & rel){
 		AttInfo.insert(rel.AttInfo.begin(),rel.AttInfo.end());
 	}
+	friend ostream& operator<<(ostream& os, RelInfo &relinfo){
+
+        os << relinfo.numTuples << endl;
+        os << relinfo.AttInfo.size() << endl;
+
+        for(auto i:relinfo.AttInfo){
+            os << i.first << endl;
+            os << i.second << endl;
+        }
+        return os;
+    }
+
+    friend istream& operator>>(istream& is, RelInfo &relinfo){
+
+        int numTuples;
+        is >> numTuples;
+        relinfo.numTuples = numTuples;
+        int numatts;
+        is >> numatts;
+
+        for (int i = 0; i < numatts; i++){
+            string attr;
+            int distinct;
+            is >> attr;
+            is >> distinct;
+            relinfo.AttInfo[attr] = distinct;
+        }
+        return is;
+    }
 
 };
 

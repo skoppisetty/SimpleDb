@@ -52,9 +52,62 @@ void Statistics::CopyRel(char *oldName, char *newName)
 	
 void Statistics::Read(char *fromWhere)
 {
+    ifstream statFile(fromWhere);
+    if (!statFile.good()){
+        return;
+    }
+    unsigned count;
+
+    statFile >> count;
+    for(int i=0;i<count;i++){
+        string rel;
+        RelInfo relinfo;
+        statFile >> rel;
+        statFile >> relinfo;
+        relation_stats[rel]=relinfo;
+    }
+
+    statFile >> count;
+    for(int i=0;i<count;i++){
+        string attribute;
+        string rel;
+        statFile >> attribute;
+        statFile >> rel;
+        attribute_stats[attribute]=rel;
+    }
+
+    statFile >> count;
+    for(int i=0;i<count;i++){
+        string rel;
+        string mergedrel;
+        statFile >> rel;
+        statFile >> mergedrel;
+        merged_stats[rel]=mergedrel;
+    }
 }
+
 void Statistics::Write(char *fromWhere)
 {
+    ofstream statFile(fromWhere);
+    statFile << relation_stats.size() << endl;
+    for(auto i:relation_stats){
+        statFile << i.first << endl;
+        statFile << i.second << endl;
+    }
+
+    statFile << attribute_stats.size() << endl;
+    for(auto i:attribute_stats){
+        statFile << i.first << endl;
+        statFile << i.second << endl;
+    }
+
+    statFile << merged_stats.size() << endl;
+    for(auto i:merged_stats){
+        statFile << i.first << endl;
+        statFile << i.second << endl;
+    }
+
+    statFile.close();
 }
 
 vector<string> Statistics::CheckParsetree(struct AndList *p_And){
