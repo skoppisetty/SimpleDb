@@ -1,4 +1,4 @@
-CC = g++ -O2 -g -Wno-deprecated -Wno-write-strings 
+CC = g++ -O2 -std=c++11 -g -Wno-deprecated -Wno-write-strings 
 LDFLAGS := -pthread -L./
 tag = -i
 

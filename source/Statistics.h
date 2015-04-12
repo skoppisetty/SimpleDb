@@ -3,6 +3,8 @@
 #include "ParseTree.h"
 #include <map>
 #include <string>
+#include <set>
+#include <iostream>
 
 using namespace std;
 
@@ -13,11 +15,19 @@ private:
 public:
 	int numTuples;
 	map<string,int> AttInfo;
-	RelInfo(int num){
+	RelInfo(){}
+	~RelInfo(){}
+	void SetTuples(int num){
 		numTuples = num;
 	}
 	void AddAtt(string att, int num){
 		AttInfo[att]=num;
+	}
+	void print(){
+		cout << numTuples << endl;
+		for(auto& i:AttInfo){
+			cout << i.first << " => " << i.second << endl;
+		}
 	}
 
 };
@@ -30,7 +40,9 @@ private:
 	
 
 public:
-	map<string,RelInfo> rels;
+	map<string,RelInfo> relation_stats;
+	map<string,string> attribute_stats;
+
 	Statistics();
 	Statistics(Statistics &copyMe);	 // Performs deep copy
 	~Statistics();
@@ -46,6 +58,7 @@ public:
 	void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
+	double EstimateResult(struct AndList *parseTree);
 };
 
 
