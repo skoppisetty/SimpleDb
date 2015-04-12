@@ -38,16 +38,20 @@ void Statistics::CopyRel(char *oldName, char *newName)
 {	
 	string oldrelation(oldName);
 	string newrelation(newName);
-
+	cout << oldrelation << " chaging to " << newrelation << endl;
 	// map<string,int> oldAttInfo = rels[oldname].AttInfo;
 	RelInfo newrelinfo;
 	newrelinfo.SetTuples(relation_stats[oldrelation].numTuples);
 
 	for(auto& i:relation_stats[oldrelation].AttInfo){
-		newrelinfo.AddAtt(i.first,i.second);
+		string newattr(newrelation + "." + i.first);
+		newrelinfo.AddAtt(newattr,i.second);
+		cout << newattr << " " <<  newrelation << endl;
+		attribute_stats[newattr] = newrelation;
 	}
-
+	newrelinfo.print();
 	relation_stats[newrelation] = newrelinfo;
+
 }
 	
 void Statistics::Read(char *fromWhere)
@@ -320,9 +324,11 @@ double Statistics::EstimateResult(struct AndList *p_And){
                         case_join = true;
                         string lattr(leftop->value);
                         string rattr(rightop->value);
+                        cout << lattr << " " << rattr << endl;
                         string lrel = attribute_stats[lattr];
                         string rrel = attribute_stats[rattr];
-                        
+                        cout << lrel << " " << rrel << endl;
+
                         int lRelSize = relation_stats[lrel].numTuples;
                    		
                         int lDistinct = relation_stats[lrel].AttInfo[lattr];
@@ -331,10 +337,10 @@ double Statistics::EstimateResult(struct AndList *p_And){
                         int rRelSize = relation_stats[rrel].numTuples;
                         int rDistinct = relation_stats[rrel].AttInfo[rattr];
 
-                        // cout << lRelSize << " " << lDistinct << " " << rRelSize << " " << rDistinct << endl;
+                        cout << lRelSize << " " << lDistinct << " " << rRelSize << " " << rDistinct << endl;
                         double denominator = max(lDistinct,rDistinct);
-                        ORresult += (lRelSize * (rRelSize / denominator));
-                        // cout << "Joing : " << ORresult << endl;
+                        ORresult += (min(lRelSize,rRelSize) * (max(rRelSize,lRelSize) / denominator));
+                        cout << "Joing : " << ORresult << endl;
                       	
 	 					}
 	 					else{

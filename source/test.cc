@@ -232,7 +232,7 @@ void q3 (){
 	double result = s.Estimate(final, set3, 4);
 	if(fabs(result-60000000.0)>0.1)
 		cout<<"error in estimating Q3\n";
-
+	cout << result << endl;
 	s.Apply(final, set3, 4);
 
 	s.Write(fileName);
@@ -271,22 +271,22 @@ void q4 (){
 	s.CopyRel("nation","n");
 	s.CopyRel("region","r");
 
-	char *cnf = "(p_partkey=ps_partkey) AND (p_size = 2)";
+	char *cnf = "(p.p_partkey=ps.ps_partkey) AND (p.p_size = 2)";
 	yy_scan_string(cnf);
 	yyparse();
 	s.Apply(final, relName, 2);
 
-	cnf ="(s_suppkey = ps_suppkey)";
+	cnf ="(s.s_suppkey = ps.ps_suppkey)";
 	yy_scan_string(cnf);
 	yyparse();
 	s.Apply(final, relName, 3);
 
-	cnf =" (s_nationkey = n_nationkey)";
+	cnf =" (s.s_nationkey = n.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();
 	s.Apply(final, relName, 4);
 
-	cnf ="(n_regionkey = r_regionkey) AND (r_name = 'AMERICA') ";
+	cnf ="(n.n_regionkey = r.r_regionkey) AND (r.r_name = 'AMERICA') ";
 	yy_scan_string(cnf);
 	yyparse();
 
@@ -295,7 +295,7 @@ void q4 (){
 		cout<<"error in estimating Q4\n";
 
 	s.Apply(final, relName, 5);	
-	cout << result << endl;
+	
 	s.Write(fileName);
 	
 
@@ -337,7 +337,7 @@ void q5 (){
 		cout<<"error in estimating Q5\n";
 
 	s.Apply(final, relName, 3);
-	cout << result << endl;
+
 	s.Write(fileName);
 	
 
