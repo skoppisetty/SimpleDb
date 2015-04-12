@@ -57,9 +57,112 @@ void Statistics::Write(char *fromWhere)
 {
 }
 
-void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
-{
+vector<string> Statistics::CheckParsetree(struct AndList *p_And){
+	vector<string> attrs;
+	while(p_And){
+		OrList *p_or = p_And->left;
+		while(p_or){
+			ComparisonOp *comp = p_or->left;
+			if(comp!=NULL){
+				Operand *leftop = comp->left;
+				if(leftop!=NULL && leftop->code == NAME){
+					string attribute(leftop->value);
+					if(attribute_stats.count(attribute)==0){
+						cout << "attribute name " << attribute << " not found" << endl;
+						exit(-1);
+					}
+					attrs.push_back(attribute);
+				}
+				Operand *rightop = comp->right;
+				if(rightop!=NULL && rightop->code == NAME){
+					string attribute(rightop->value);
+					if(attribute_stats.count(attribute)==0){
+						cout << "attribute name " << attribute << " not found" << endl;
+						exit(-1);
+					}
+					attrs.push_back(attribute);
+				}
+
+			}
+			p_or = p_or->rightOr;
+		}
+		p_And = p_And->rightAnd;
+	}
+	return attrs;
 }
+
+void Statistics::CheckRelations(char *relNames[],int numToJoin){
+	for(int i=0;i<numToJoin;i++){
+		string rel(relNames[i]);
+		if(relation_stats.count(rel)==0 && merged_stats.count(rel)==0){
+			cout << "Relation not found" << rel << endl;
+			exit(-1);
+		}
+	}
+}
+
+void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin){
+	// # todo
+	// Parsetree check
+	CheckParsetree(parseTree);
+	// relations check
+	CheckRelations(relNames,numToJoin);
+
+	// Do estimate
+	double estimate = 0.0l;
+	if (0 == parseTree and numToJoin <= 2){
+		double result = 1.0l;
+		for (signed i = 0; i < numToJoin; i++){
+			string relation(relNames[i]);
+			result *= relation_stats[relation].numTuples;
+		}
+		estimate = result;
+	}
+	else{
+		estimate = EstimateResult(parseTree);
+	}
+
+	string newrelation;
+	if (Case_Join(parseTree)){
+		for(int i=0;i<numToJoin;i++){
+			string rel(relNames[i]);
+			newrelation += rel;
+		}
+
+		RelInfo joinRelInfo;
+		joinRelInfo.numTuples=estimate;
+
+		for(int i=0;i<numToJoin;i++){
+			joinRelInfo.copyAttrs(relation_stats[relNames[i]]);
+		}
+
+		joinRelInfo.print();
+		relation_stats[newrelation]=joinRelInfo;
+
+		vector<string> attrs = CheckParsetree(parseTree);
+		set<string> relset;
+
+		for(auto i:attrs){
+			relset.insert(attribute_stats[i]);
+		}
+
+		for(auto i:relset){
+			joinRelInfo.copyAttrs(relation_stats[i]);
+			relation_stats.erase(i);
+		}
+
+		for(int i=0;i<numToJoin;i++){
+			relation_stats.erase(relNames[i]);
+			merged_stats[relNames[i]]=newrelation;
+		}
+
+		for(auto i:joinRelInfo.AttInfo){
+			attribute_stats[i.first]=newrelation;
+		}
+	}
+}
+
+
 double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
 {
 	if (0 == parseTree and numToJoin <= 2){
@@ -72,12 +175,41 @@ double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numT
 	}
 	// # todo
 	// Parsetree check
+	CheckParsetree(parseTree);
 	// relations check
+	CheckRelations(relNames,numToJoin);
 
 	double result = EstimateResult(parseTree);
   	cout << "estimated result is " << result << endl;
   	return result;
 }
+
+bool Statistics::Case_Join(struct AndList *p_And){
+	bool case_join = false;
+	while(p_And){
+		OrList *p_or = p_And->left;
+	 	while(p_or){
+	 		ComparisonOp * comp = p_or->left;
+	 		if(comp != NULL){
+	 			Operand *leftop = comp->left;
+	 			Operand *rightop = comp->right;
+	 			if( (leftop != NULL && (leftop->code == NAME)) &&
+		 			(rightop != NULL && (rightop->code == NAME) ) && comp->code == EQUALS) {
+					// Join sucks
+					cout << "Case join" << endl;
+					case_join = true;   
+					return case_join;                   	
+				}
+
+		 	}
+	 		p_or = p_or->rightOr;
+	 	}
+		p_And = p_And->rightAnd;
+
+	}
+	return case_join;
+}
+
 
 double Statistics::EstimateResult(struct AndList *p_And){
 	double result = 1.0l;
@@ -221,7 +353,7 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 					cout << "Result after " << attribute << " "  << ORresult<< endl;
 	 					break;
 	 			}
-	 			if (true){
+	 			if (!case_join){
                Operand *record = NULL;
                if (leftop->code == NAME)
                  {record = leftop;}
