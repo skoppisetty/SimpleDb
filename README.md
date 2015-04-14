@@ -1,38 +1,15 @@
 Readme 
 =========
 
-Assignment 3
+Assignment 4_1
 
-implemention of set of below relational operations:
-SelectPipe, SelectFile, Project, Join, DuplicateRemoval, Sum, GroupBy, and WriteOut.
+Implemention of Statistics Class
 
 TEAM:
 =========
 Sharath Chandra Darsha 	 UFID: 45194064
 
 Suresh Koppisetty	 UFID: 18111766	
-
-Important Note:
-=========
-We tested with 10M  and 1GB data, but only included 10MB Data with the code.Please set the correct path if you wanna test with 1GB Data/ or your own data.
-
-Please make sure that the Data Path in the test.cat and gtesting.cc is valid before you test.
-
-NOTE: PLEASE CHANGE THE DATAPATH SETTINGS IN "gtesting.cc" AND "test.cat" AND then run "./gtesting.o < 1.txt" TO GENERATE DBFILE BIN FILES FOR ALL TABLES.
-
-Current Settings in gtesting.cc:
-=========
-char *dbfile_dir = ""; // dir where binary heap files should be stored
-char *tpch_dir ="../DATA/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
-char *catalog_path = "../source/catalog"; // full path of the catalog file
-
-
-
-Current Settings in test.cat:
-=========
-../source/catalog
-
-../DATA/10M/
 
 
 Folder Structure:
@@ -52,15 +29,13 @@ starting from the root folder
 1. make clean				// Clean any previously compiled code 
 2. make all					// Compile all the files necessary  
 3. cd bin
-4. ./gtesting.o < 1.txt		// to create and load DBfiles for all the tables
-5. ./test [1-6]				// to run the different queries in test.cc
+4. ./test [0-11]			// to run the different queries in test.cc
 
-NOTE: PLEASE CHANGE THE DATAPATH SETTINGS IN gtesting.cc AND test.cat AND then run "./gtesting.o < 1.txt" TO GENERATE DBFILE BIN FILES FOR ALL TABLES.
 
 Executable Files:
 ========
-2. gtesting.o 
-3. test
+1. gtesting.o 
+2. test
 
 
 Settings:
@@ -71,523 +46,85 @@ The following variables control the various file locations and they are declared
 	o catalog_path -- this stores the catalog file path. By default this is set to "source" folder. 
 
 
-Results with 1G Data 
+Results  
 =========
 
-TestCase 1 Results:
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
-HeapFile::Open
-ps_partkey: [6333], ps_suppkey: [6334], ps_availqty: [3711], ps_supplycost: [1.01], ps_comment: [s use slyly. fluffily express requests wake carefully ironic packages]
-ps_partkey: [9097], ps_suppkey: [4098], ps_availqty: [3012], ps_supplycost: [1.01], ps_comment: [s the bold pinto beans cajole carefully after the slyly unusual instructions. slyly special packages above the unusual, bold packages cajole blithely even Tiresias. theodolites among the foxes are]
-ps_partkey: [20468], ps_suppkey: [469], ps_availqty: [6884], ps_supplycost: [1], ps_comment: [furiously among the slyly ironic instructions. final, unusual packages wake slyly. final accounts cajole. deposits above the i]
-ps_partkey: [27115], ps_suppkey: [9618], ps_availqty: [7966], ps_supplycost: [1.02], ps_comment: [e regular, ironic dugouts. slyly special requests cajole quickly across the blithely express requests. deposits unwind carefully pending theodolites. pinto beans about the even, regular theodolite]
-ps_partkey: [34494], ps_suppkey: [9501], ps_availqty: [7438], ps_supplycost: [1.02], ps_comment: [egular excuses. final, regular deposits wake. pinto beans according to th]
-ps_partkey: [43172], ps_suppkey: [685], ps_availqty: [6600], ps_supplycost: [1.01], ps_comment: [ites integrate blithely above the slyly regular instructions. asymptotes besides the regular, even accounts haggle carefully slyly bold requests. even pinto beans ]
-ps_partkey: [43764], ps_suppkey: [1277], ps_availqty: [2344], ps_supplycost: [1.02], ps_comment: [; furious, ironic requests nag furiously against the silent packages-- furiously pending pinto beans use blithely careful]
-ps_partkey: [51671], ps_suppkey: [4177], ps_availqty: [3399], ps_supplycost: [1.02], ps_comment: [iously. blithely bold requests haggle furiously. slyly final requests sleep. final, final theodolites cajole. accounts play about the slyly unusual requests. bold courts haggle. bol]
-ps_partkey: [60953], ps_suppkey: [954], ps_availqty: [8611], ps_supplycost: [1.01], ps_comment: [ully even dolphins wake carefully about the slyly final pinto beans]
-ps_partkey: [61707], ps_suppkey: [1708], ps_availqty: [3178], ps_supplycost: [1.02], ps_comment: [ide of the unusual, regular excuses. unusual, special packages are carefully across the even theodolites: furi]
-ps_partkey: [71984], ps_suppkey: [6999], ps_availqty: [6016], ps_supplycost: [1.01], ps_comment: [eodolites are blithely across the special requests. quickly regular excuses are furiously against the slyly final accou]
-ps_partkey: [74375], ps_suppkey: [6883], ps_availqty: [864], ps_supplycost: [1.02], ps_comment: [lithely express asymptotes nag regular packages. special, ruthless instructions against the furiously ruthless packages boost around the packages. slyly bold accounts use. furiously ironic pa]
-ps_partkey: [76994], ps_suppkey: [9502], ps_availqty: [9712], ps_supplycost: [1], ps_comment: [. carefully ironic platelets cajole furiously among the furiously regular asymptotes. furiously express asymptotes wake caref]
-ps_partkey: [93653], ps_suppkey: [3654], ps_availqty: [4473], ps_supplycost: [1.02], ps_comment: [ of the carefully final requests. bold deposits are slyly. instructions nod furiously instructions. careful]
-ps_partkey: [102497], ps_suppkey: [2498], ps_availqty: [6491], ps_supplycost: [1], ps_comment: [fully final accounts. even accounts after the carefully final accounts haggle according to the blithely special requests. carefully unusual]
-ps_partkey: [122543], ps_suppkey: [5056], ps_availqty: [5753], ps_supplycost: [1], ps_comment: [e the quickly ironic dependencies. slyly ironic accounts]
-ps_partkey: [139711], ps_suppkey: [9712], ps_availqty: [4286], ps_supplycost: [1.01], ps_comment: [ully unusual escapades sleep along the special instructions. final, bold ideas across the slyly ironic ideas sleep dependenc]
-ps_partkey: [155112], ps_suppkey: [5113], ps_availqty: [7635], ps_supplycost: [1], ps_comment: [refully bold packages. special somas cajole according to the foxes. furiously even accou]
-ps_partkey: [158093], ps_suppkey: [5639], ps_availqty: [3751], ps_supplycost: [1], ps_comment: [iously unusual gifts maintain quickly according to the slyly pending deposits. quickly ]
-ps_partkey: [193659], ps_suppkey: [6179], ps_availqty: [6606], ps_supplycost: [1.01], ps_comment: [can haggle. quickly express packages are blithely. even requests against the silent accounts sleep special packages. ironic ideas according to the furiously regular dolphins use quickly plate]
-ps_partkey: [193981], ps_suppkey: [3982], ps_availqty: [619], ps_supplycost: [1.01], ps_comment: [ic accounts after the unusual, regular instructions grow carefully around the blithely unusual dependencies. pending accounts along the bl]
-
-
- query1 returned 21 records 
-cleaning up
-cleaning done
-
-
-Testcase 2 Results:
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
-HeapFile::Open
-0
-1
-7
-int: [31], string: [grey ghost steel maroon moccasin], double: [931.03]
-int: [1030], string: [green lace medium burnished ivory], double: [931.03]
-int: [2029], string: [rosy blush forest violet frosted], double: [931.02]
-int: [3028], string: [yellow medium cornflower green misty], double: [931.02]
-int: [4027], string: [sky indian lawn chiffon powder], double: [931.02]
-int: [5026], string: [blanched blue maroon lawn wheat], double: [931.02]
-int: [6025], string: [blanched lime gainsboro aquamarine floral], double: [931.02]
-int: [7024], string: [goldenrod rosy chiffon firebrick hot], double: [931.02]
-int: [8023], string: [green dodger peru cornsilk pink], double: [931.02]
-int: [9022], string: [beige ghost dark floral pale], double: [931.02]
-int: [10021], string: [brown chartreuse goldenrod seashell burnished], double: [931.02]
-int: [11020], string: [magenta medium powder khaki peach], double: [931.02]
-
-
- query2 returned 12 records 
-cleaning up
-cleaning done
-
-
-Testcase 3 Results:
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
-HeapFile::Open
-double: [9.24623e+07]
-double: [9.24623e+07]
-
-
- query3 returned 1 records 
-cleaning up
-cleaning done
-
-
-Testcase 4 Results
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
- query4 
-HeapFile::Open
-HeapFile::Open
-name = ./join_left_temp.bin.metadata
-name = ./join_right_temp.bin.metadata
-0
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-double: [4.97209e+06]
-double: [4.97209e+06]
- query4 returned 1 recs 
-cleaning up
-cleaning done
-
-
-
-Testcase 5 (Please see ps.w.tmp containing 9996 records)
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
-HeapFile::Open
-1
-name = ./temp.bin.metadata
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- query5 finished..output written to file ps.w.tmp
-cleaning up
-cleaning done
-
-Testcase 6 
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/1G/
- heap files dir: 	
- 
-
- query6 
-HeapFile::Open
-HeapFile::Open
-name = ./group_temp.bin.metadata
-name = ./join_left_temp.bin.metadata
-name = ./join_right_temp.bin.metadata
-0
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-double: [204379]
-double: [203965]
-double: [204268]
-double: [221111]
-double: [206017]
-double: [192866]
-double: [188431]
-double: [187810]
-double: [195760]
-double: [206286]
-double: [191590]
-double: [222131]
-double: [191148]
-double: [181334]
-double: [188816]
-double: [184488]
-double: [192989]
-double: [220938]
-double: [208204]
-double: [204125]
-double: [197406]
-double: [192906]
-double: [202730]
-double: [195911]
-double: [204379]
-double: [203965]
-double: [204268]
-double: [221111]
-double: [206017]
-double: [192866]
-double: [188431]
-double: [187810]
-double: [195760]
-double: [206286]
-double: [191590]
-double: [222131]
-double: [191148]
-double: [181334]
-double: [188816]
-double: [184488]
-double: [192989]
-double: [220938]
-double: [208204]
-double: [204125]
-double: [197406]
-double: [192906]
-double: [202730]
-double: [195911]
-double: [185633]
- query6 returned sum for 25 groups (expected 25 groups)
-cleaning up
-cleaning done
-
-
-
-Results with 10M Data 
-=========
-
-Generating required database bin files before starting test
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./gtesting.o < 1.txt 
-Running main() from gtest_main.cc
-[==========] Running 7 tests from 1 test case.
-[----------] Global test environment set-up.
-[----------] 7 tests from lineitem_test
-[ RUN      ] lineitem_test.Open_test
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
-name = lineitem.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/lineitem.tbl
-HeapFile::Load
-[       OK ] lineitem_test.Open_test (249 ms)
-[ RUN      ] lineitem_test.Load_test
-HeapFile::Open
- selected 60175 recs 
-[       OK ] lineitem_test.Load_test (15 ms)
-[ RUN      ] lineitem_test.Add_test
-HeapFile::Open
-[       OK ] lineitem_test.Add_test (1 ms)
-[ RUN      ] lineitem_test.Write_test
-HeapFile::Open
- selected 60176 recs 
-[       OK ] lineitem_test.Write_test (16 ms)
-[ RUN      ] lineitem_test.Getnext_test
-HeapFile::Open
-Enter in your CNF: ( Att 0 from left record > Att 0 from literal record (Int))  AND
-( Att 0 from left record < Att 1 from literal record (Int)) 
-[       OK ] lineitem_test.Getnext_test (29 ms)
-[ RUN      ] lineitem_test.Mock_Open_test
-name = lineitem.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/lineitem.tbl
-HeapFile::Load
-[       OK ] lineitem_test.Mock_Open_test (167 ms)
-[ RUN      ] lineitem_test.createallbins
-name = supplier.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/supplier.tbl
-HeapFile::Load
-name = partsupp.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/partsupp.tbl
-HeapFile::Load
-name = part.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/part.tbl
-HeapFile::Load
-name = nation.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/nation.tbl
-HeapFile::Load
-name = customer.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/customer.tbl
-HeapFile::Load
-name = orders.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/orders.tbl
-HeapFile::Load
-name = region.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/region.tbl
-HeapFile::Load
-name = lineitem.bin.metadata
- HeapFile::Create
-Loading data from ../DATA/10M/lineitem.tbl
-HeapFile::Load
-[       OK ] lineitem_test.createallbins (505 ms)
-[----------] 7 tests from lineitem_test (982 ms total)
-
-[----------] Global test environment tear-down
-[==========] 7 tests from 1 test case ran. (982 ms total)
-[  PASSED  ] 7 tests.
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 1
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
-HeapFile::Open
-
-
- query1 returned 0 records 
-cleaning up
-cleaning done
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 2
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
-HeapFile::Open
-0
-1
-7
-int: [31], string: [grey ghost steel maroon moccasin], double: [931.03]
-int: [1030], string: [green lace medium burnished ivory], double: [931.03]
-
-
- query2 returned 2 records 
-cleaning up
-cleaning done
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 3
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
-HeapFile::Open
-double: [821906]
-double: [821906]
-
-
- query3 returned 1 records 
-cleaning up
-cleaning done
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 4
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
- query4 
-HeapFile::Open
-HeapFile::Open
-name = ./join_left_temp.bin.metadata
-name = ./join_right_temp.bin.metadata
-0
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-double: [52699.7]
-double: [52699.7]
- query4 returned 1 recs 
-cleaning up
-cleaning done
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 5
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
-HeapFile::Open
-1
-name = ./temp.bin.metadata
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
- query5 finished..output written to file ps.w.tmp
-cleaning up
-cleaning done
-
-
-suresh@suresh-Lenovo-G580:~/SimpleDb/bin$ ./test 6
- 
-** IMPORTANT: MAKE SURE THE INFORMATION BELOW IS CORRECT **
- catalog location: 	../source/catalog
- tpch files dir: 	../DATA/10M/
- heap files dir: 	
- 
-
- query6 
-HeapFile::Open
-HeapFile::Open
-name = ./group_temp.bin.metadata
-name = ./join_left_temp.bin.metadata
-name = ./join_right_temp.bin.metadata
-0
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-0
-BigQ started
-
-TPMMS Merge start
-
-TPMMS Merge done
-
-double: [1841.38]
-double: [1155.09]
-double: [1382.72]
-double: [1411.46]
-double: [2324.9]
-double: [2134.05]
-double: [662.2]
-double: [2326.06]
-double: [1996.33]
-double: [4001.75]
-double: [786.03]
-double: [560.7]
-double: [1661.72]
-double: [496.2]
-double: [2445.8]
-double: [812.47]
-double: [4228.17]
-double: [2286.58]
-double: [4845.09]
-double: [2708.84]
-double: [947.99]
-double: [3073.68]
-double: [3626.44]
-double: [2267.9]
-double: [1841.38]
-double: [1155.09]
-double: [1382.72]
-double: [1411.46]
-double: [2324.9]
-double: [2134.05]
-double: [662.2]
-double: [2326.06]
-double: [1996.33]
-double: [4001.75]
-double: [786.03]
-double: [560.7]
-double: [1661.72]
-double: [496.2]
-double: [2445.8]
-double: [812.47]
-double: [4228.17]
-double: [2286.58]
-double: [4845.09]
-double: [2708.84]
-double: [947.99]
-double: [3073.68]
-double: [3626.44]
-double: [2267.9]
-double: [5253.96]
- query6 returned sum for 25 groups (expected 25 groups)
-cleaning up
-cleaning done
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 0
 
+Estimation Result: 800000
+ Correct Answer: 800000
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 1
+
+Your estimation Result  857316
+ Correct Answer: 8.5732e+5
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 2
+
+Estimation Result: 1.5e+06
+ Correct Answer: 1500000
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 3
+
+Estimation Result: 6e+07
+ Correct Answer: 60000000.0
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 4
+
+Estimation Result: 3200
+ Correct Answer: 3200
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 5
+
+Estimation Result: 400081
+ Correct Answer: 400081
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 6
+
+Estimation Result: 32000
+ Correct Answer: 32000
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 7
+
+Estimation Result: 2.00041e+06
+ Correct Answer: 2000405
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 8
+
+Estimation Result: 48000
+ Correct Answer: 48000
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 9
+
+Estimation Result: 4
+ Correct Answer: 4
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 10
+
+Estimation Result: 2.0004e+06
+ Correct Answer: 2000405
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$ ./test 11
+
+Estimation Result: 21432.9
+ Correct Answer: 21432.9
+
+
+
+sharath@sharath-Lenovo-Z40-70:~/bearded-octo-batman/bin$

@@ -26,7 +26,7 @@ private:
 	Pipe* fromBigQ;
 	BigQ* bq;
 	Schema * my_schema;
-	OrderMaker *query = NULL;
+	OrderMaker *query;
 	int CompareOrders(OrderMaker &, CNF &, OrderMaker *&);
 	int CheckCNF(CNF &cnf, OrderMaker *& query, OrderMaker &sort,OrderMaker &sortorder, int k, int & flag, int i, int j);
 	int Searchbinary(Record &fetchme, CNF &cnf, Record &literal,OrderMaker *& query);
