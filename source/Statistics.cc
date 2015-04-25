@@ -450,3 +450,44 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	if (case_join){ return result; }
 	return result * selectOnlySize;
 }
+
+void Statistics::GetRelationAndAttribute(struct Operand *op,
+    string &relation, string &attribute) {
+    string val(op->value);
+    string rel;
+    stringstream s;
+    int i = 0;
+    while (val[i] != '_'){
+        if (val[i] == '.'){
+            relation = s.str();
+            break;
+        }
+        s << val[i];
+        i++;
+    }
+    if (val[i] == '.'){
+        attribute = val.substr(i+1);
+    }
+    else {
+        attribute = val;
+        relation = attribute_stats[attribute];
+    }
+}
+
+void Statistics::GetRelation(Operand *op, string &relation){
+    string val(op->value);
+    string attribute;
+    stringstream s;
+    int i = 0;
+    while (val[i] != '_'){
+        if (val[i] == '.'){
+            relation = s.str(); 
+            return; 
+        }
+        s << val[i];
+        i++;
+    }
+    // not found from the op - check our stats class
+    attribute = val;
+    relation = attribute_stats[attribute];
+}

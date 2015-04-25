@@ -117,9 +117,10 @@ void parse_query(vector<AndList> &joins, vector<AndList> &selects, vector<AndLis
 					if(op->code != NAME){
 						op = current_Or->left->right;
 					}
-					// get table name
+					// get relation name
 					string rel;
-					stats.ParseRelation(op, rel);
+					stats.GetRelation(op, rel);
+					cout << "table name" << rel << endl;
 					if(involvedTables.size() == 0){
 						involvedTables.push_back(rel);
 					}
@@ -275,8 +276,73 @@ int main () {
 	// split the andlist to seperate andlists
 	parse_query(joins, selects, joinDepSels, *stats);
 
+	cout << "Number of selects: " << selects.size() << endl;
+	cout << "Number of joins: " << joins.size() << endl;
+	cout << "Number of join dependent selects: " << joinDepSels.size() << endl;
 
 	// cout << whichOne << endl;
+	map<string, ParseNode*> leafs;
+	ParseNode *insert = NULL; //holder variable for when we need to insert stuff.
+	ParseNode *traverse;
+	ParseNode *topNode = NULL;
+	int pipeID = 1;
+
+	TableList *iterTable = tables;
+	while(iterTable != NULL){
+		if(iterTable->aliasAs != NULL){
+			leafs.insert(pair<string,ParseNode*>(iterTable->aliasAs, new ParseNode()));
+			stats->CopyRel(iterTable->tableName, iterTable->aliasAs);
+		}
+		else{
+			leafs.insert(pair<string,ParseNode*>(iterTable->tableName, new ParseNode()));
+		}
+		insert = leafs[iterTable->aliasAs];
+		insert->schema = new Schema ("catalog", iterTable->tableName);
+		if(iterTable->aliasAs != 0){
+			insert->schema->updateName(string(iterTable->aliasAs));
+		}
+		topNode = insert;
+		insert->outPipeID = pipeID++;
+		string base (iterTable->tableName);
+		string path ("bin/"+base+".bin");
+		insert->path = strdup(path.c_str());
+		insert->SetType(SELECTF);
+		iterTable = iterTable->next;	
+	}
+
+	AndList selectIter;
+	string table;
+	string attribute;
+
+	for(unsigned i = 0; i < selects.size(); i++){
+		selectIter = selects[i];
+		if(selectIter.left->left->left->code == NAME){
+			stats->GetRelation(selectIter.left->left->left, table);
+		}
+		else{
+			stats->GetRelation(selectIter.left->left->right, table);
+		}
+
+		traverse = leafs[table]; //Get the root node (Select File)
+		projectStart = table;
+		while(traverse->parent != NULL){
+			traverse = traverse->parent;
+		}
+		insert = new ParseNode();
+		traverse->parent = insert;
+		insert->left = traverse;
+		insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
+		insert->type = SELECTP;
+		insert->cnf = &selects[i]; //Need to implement CreateCNF in QueryTreeNode
+		insert->lChildPipeID = traverse->outPipeID;
+		insert->outPipeID = pipeID++;
+		char *statApply = strdup(table.c_str());
+		stats->Apply(&selectIter, &statApply,1);
+		topNode = insert;
+	}
+
+	
+
 	PrintAndList(boolean);
 	cout << endl;
 	// PrintOrList(myOrList);

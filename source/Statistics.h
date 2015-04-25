@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
 
 class RelInfo
@@ -88,6 +89,11 @@ public:
 	double EstimateResult(struct AndList *parseTree);
 	vector<string> CheckParsetree(struct AndList *p_And);
 	void CheckRelations(char *relNames[],int numToJoin);
+   void GetRelation(Operand *op, string &relation);
+
+	void GetRelationAndAttribute(struct Operand *op, string &relation,
+				       string &attribute);
+
 };
 
 
