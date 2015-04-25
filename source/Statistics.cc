@@ -38,7 +38,7 @@ void Statistics::CopyRel(char *oldName, char *newName)
 {	
 	string oldrelation(oldName);
 	string newrelation(newName);
-	cout << oldrelation << " chaging to " << newrelation << endl;
+	// cout << oldrelation << " chaging to " << newrelation << endl;
 	// map<string,int> oldAttInfo = rels[oldname].AttInfo;
 	RelInfo newrelinfo;
 	newrelinfo.SetTuples(relation_stats[oldrelation].numTuples);
@@ -46,72 +46,72 @@ void Statistics::CopyRel(char *oldName, char *newName)
 	for(auto& i:relation_stats[oldrelation].AttInfo){
 		string newattr(newrelation + "." + i.first);
 		newrelinfo.AddAtt(newattr,i.second);
-		cout << newattr << " " <<  newrelation << endl;
+		// cout << newattr << " " <<  newrelation << endl;
 		attribute_stats[newattr] = newrelation;
 	}
-	newrelinfo.print();
+	// newrelinfo.print();
 	relation_stats[newrelation] = newrelinfo;
 
 }
 	
 void Statistics::Read(char *fromWhere)
 {
-    ifstream statFile(fromWhere);
-    if (!statFile.good()){
+    ifstream stats_file(fromWhere);
+    if (!stats_file.good()){
         return;
     }
     unsigned count;
 
-    statFile >> count;
+    stats_file >> count;
     for(int i=0;i<count;i++){
         string rel;
         RelInfo relinfo;
-        statFile >> rel;
-        statFile >> relinfo;
+        stats_file >> rel;
+        stats_file >> relinfo;
         relation_stats[rel]=relinfo;
     }
 
-    statFile >> count;
+    stats_file >> count;
     for(int i=0;i<count;i++){
         string attribute;
         string rel;
-        statFile >> attribute;
-        statFile >> rel;
+        stats_file >> attribute;
+        stats_file >> rel;
         attribute_stats[attribute]=rel;
     }
 
-    statFile >> count;
+    stats_file >> count;
     for(int i=0;i<count;i++){
         string rel;
         string mergedrel;
-        statFile >> rel;
-        statFile >> mergedrel;
+        stats_file >> rel;
+        stats_file >> mergedrel;
         merged_stats[rel]=mergedrel;
     }
 }
 
 void Statistics::Write(char *fromWhere)
 {
-    ofstream statFile(fromWhere);
-    statFile << relation_stats.size() << endl;
+    ofstream stats_file(fromWhere);
+    stats_file << relation_stats.size() << endl;
     for(auto i:relation_stats){
-        statFile << i.first << endl;
-        statFile << i.second << endl;
+        stats_file << i.first << endl;
+        stats_file << i.second << endl;
     }
 
-    statFile << attribute_stats.size() << endl;
+    stats_file << attribute_stats.size() << endl;
     for(auto i:attribute_stats){
-        statFile << i.first << endl;
-        statFile << i.second << endl;
+        stats_file << i.first << endl;
+        stats_file << i.second << endl;
     }
 
-    statFile << merged_stats.size() << endl;
+    stats_file << merged_stats.size() << endl;
     for(auto i:merged_stats){
-        statFile << i.first << endl;
-        statFile << i.second << endl;
+        stats_file << i.first << endl;
+        stats_file << i.second << endl;
     }
 
-    statFile.close();
+    stats_file.close();
 }
 
 vector<string> Statistics::CheckParsetree(struct AndList *p_And){
@@ -341,10 +341,10 @@ double Statistics::EstimateResult(struct AndList *p_And){
                         int rRelSize = relation_stats[rrel].numTuples;
                         int rDistinct = relation_stats[rrel].AttInfo[rattr];
 
-                        cout << lRelSize << " " << lDistinct << " " << rRelSize << " " << rDistinct << endl;
+                        // cout << lRelSize << " " << lDistinct << " " << rRelSize << " " << rDistinct << endl;
                         double denominator = max(lDistinct,rDistinct);
                         ORresult += (min(lRelSize,rRelSize) * (max(rRelSize,lRelSize) / denominator));
-                        cout << "Joing : " << ORresult << endl;
+                        // cout << "Joing : " << ORresult << endl;
                       	
 	 					}
 	 					else{
@@ -407,13 +407,13 @@ double Statistics::EstimateResult(struct AndList *p_And){
 	 					if(independent){
 	 						double prob = 1.0l - (1.0l/3.0l);
  							ORresult *= prob;
- 							cout << "independent " << ORresult << endl;
+ 							// cout << "independent " << ORresult << endl;
 	 					}
 	 					else{
 
 							double prob = 1.0l/3.0l;
  							ORresult += prob;
- 							cout << "dependent " << ORresult << endl;
+ 							// cout << "dependent " << ORresult << endl;
 	 					}
 	 					// cout << "Result after " << attribute << " "  << ORresult<< endl;
 	 					break;

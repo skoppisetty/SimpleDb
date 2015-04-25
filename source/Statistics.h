@@ -11,8 +11,6 @@ using namespace std;
 
 class RelInfo
 {
-private:
-	// typedef long long int tupletype;
 public:
 	int numTuples;
 	map<string,int> AttInfo;
@@ -44,7 +42,6 @@ public:
         }
         return os;
     }
-
     friend istream& operator>>(istream& is, RelInfo &relinfo){
 
         int numTuples;
@@ -68,10 +65,6 @@ public:
 
 class Statistics
 {
-private:
-	// long long int numTuples;
-	
-
 public:
 	map<string,RelInfo> relation_stats;
 	map<string,string> attribute_stats;

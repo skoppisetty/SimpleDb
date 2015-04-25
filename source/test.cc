@@ -100,6 +100,8 @@ void q0 (){
 	yy_scan_string(cnf);
 	yyparse();
 	double result = s.Estimate(final, relName, 2);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 800000" << endl;
 	if(result!=800000)
 		cout<<"error in estimating Q1 before apply \n ";
 	s.Apply(final, relName, 2);
@@ -114,6 +116,7 @@ void q0 (){
 	yy_scan_string(cnf);
 	yyparse();
 	double dummy = s1.Estimate(final, relName, 2);
+
 	if(fabs(dummy*3.0-result) >0.1)
 	{
 		cout<<"Read or write or last apply is not correct\n";
@@ -138,7 +141,7 @@ void q1 (){
 	yyparse();
 
 	double result = s.Estimate(final, relName, 1);
-	cout<<"Your estimation Result  " <<result;
+	cout<<"Your estimation Result  " << result;
 	cout<<"\n Correct Answer: 8.5732e+5";
 
 	s.Apply(final, relName, 1);
@@ -179,6 +182,8 @@ void q2 (){
 	yyparse();
 	
 	double result = s.Estimate(final, relName, 3);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 1500000" << endl;
 	if(fabs(result-1500000)>0.1)
 		cout<<"error in estimating Q2\n";
 	s.Apply(final, relName, 3);
@@ -230,9 +235,11 @@ void q3 (){
 	yyparse();
 
 	double result = s.Estimate(final, set3, 4);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 60000000.0" << endl;
 	if(fabs(result-60000000.0)>0.1)
 		cout<<"error in estimating Q3\n";
-	cout << result << endl;
+	// cout << result << endl;
 	s.Apply(final, set3, 4);
 
 	s.Write(fileName);
@@ -291,6 +298,8 @@ void q4 (){
 	yyparse();
 
 	double result = s.Estimate(final, relName, 5);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 3200" << endl;
 	if(fabs(result-3200)>0.1)
 		cout<<"error in estimating Q4\n";
 
@@ -332,6 +341,8 @@ void q5 (){
 
 
 	double result = s.Estimate(final, relName, 3);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 400081" << endl;
 
 	if(fabs(result-400081)>0.1)
 		cout<<"error in estimating Q5\n";
@@ -372,6 +383,8 @@ void q6 (){
 	yyparse();
 
 	double result = s.Estimate(final, relName, 3);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 32000" << endl;
 
 	if(fabs(result-32000)>0.1)
 		cout<<"error in estimating Q6\n";
@@ -404,10 +417,12 @@ void q7(){
 	yy_scan_string(cnf);
 	yyparse();
 	double result = s.Estimate(final, relName, 2);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 2000405" << endl;
 
 	if(fabs(result-2000405)>0.1)
 		cout<<"error in estimating Q7\n";
-	cout << result << endl;
+	// cout << result << endl;
 	s.Apply(final, relName, 2);
 	s.Write(fileName);
 
@@ -437,6 +452,8 @@ void q8 (){
 	
 		
 	double result = s.Estimate(final, relName,2);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 48000" << endl;
 
 	if(fabs(result-48000)>0.1)
 		cout<<"error in estimating Q8\n";
@@ -473,6 +490,8 @@ void q9(){
 	yyparse();
 
 	double result = s.Estimate(final, relName,3);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 4" << endl;
 	if(fabs(result-4)>0.5)
 		cout<<"error in estimating Q9\n";
 
@@ -519,6 +538,8 @@ void q10 (){
 	yy_scan_string(cnf);                                                                               	yyparse();	
 	
 	double result = s.Estimate(final, relName, 4);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 2000405" << endl;
 	if(fabs(result-2000405)>0.1)
 		cout<<"error in estimating Q10\n";
 
@@ -551,11 +572,13 @@ void q11 (){
 	yyparse();
 	
 	double result = s.Estimate(final, relName,2);
+	cout<<"Estimation Result: " << result;
+	cout<<"\n Correct Answer: 21432.9" << endl;
 
 	if(fabs(result-21432.9)>0.5)
 		cout<<"error in estimating Q11\n";
 	s.Apply(final, relName,2);
-	cout << result << endl;
+	// cout << result << endl;
 	s.Write(fileName);
 	
 	
