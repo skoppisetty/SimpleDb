@@ -13,30 +13,32 @@ enum ParseNodeType {SELECTF, SELECTP, PROJECT, JOIN, SUM, GROUP_BY, DISTINCT, WR
 
 class ParseNode {
 
- public:
+public:
 
-      ParseNodeType type;
-      ParseNode *parent;
-      ParseNode *left;
-      ParseNode *right;
+	ParseNodeType type;
+	ParseNode *parent;
+	ParseNode *left;
+	ParseNode *right;
 
-	      //Pipe identifiers ( can be replaced by actual pipes later, or something)
-		int lChildPipeID;
-		Pipe *lInputPipe;
-		int rChildPipeID;
-		Pipe *rInputPipe;
-		int outPipeID;
-		Pipe *outPipe;
+	  //Pipe identifiers ( can be replaced by actual pipes later, or something)
+	int lChildPipeID;
+	Pipe *lInputPipe;
+	int rChildPipeID;
+	Pipe *rInputPipe;
+	int outPipeID;
+	Pipe *outPipe;
 
 
-     	Schema *schema;
+	Schema *schema;
 
-		string path;
+	string path;
 
-	   ParseNode();
-	 	~ParseNode();
+	ParseNode();
+		~ParseNode();
 
-		void SetType(ParseNodeType setter);
+	void SetType(ParseNodeType setter);
+
+	AndList *cnf;
 
 };
 

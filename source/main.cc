@@ -165,6 +165,51 @@ void fetch_relations(vector<string> &relations){
 	}
 }
 
+vector<AndList> optimize_joins(vector<AndList> joins, Statistics *s){
+	vector<AndList> newjoins;
+	AndList join;
+	double smallest = -1.0;
+	double guess = 0.0;
+	string rel1;
+	string rel2;
+	int i = 0;
+	int smallestIndex = 0;
+	int count = 0;
+	vector<string> joinedRels;
+
+	while(joins.size() > 1){
+		while(i < joins.size()){
+			join = joins[i];
+
+			s->GetRelation(join.left->left->left, rel1);
+			s->GetRelation(join.left->left->right, rel2);
+
+			if(smallest == -1.0){
+				char* rels[] = {(char*)rel1.c_str(), (char*)rel2.c_str()};
+				smallest = s->Estimate(&join, rels, 2);
+				smallestIndex = i;
+			} else {
+				char* rels[] = {(char*)rel1.c_str(), (char*)rel2.c_str()};
+				guess = s->Estimate(&join, rels, 2);
+				if(guess < smallest){
+					smallest = guess;
+					smallestIndex = i;
+				}
+			}
+			i++;
+		}
+		joinedRels.push_back(rel1);
+		joinedRels.push_back(rel2);
+		newjoins.push_back(joins[smallestIndex]);
+		count++;
+		smallest = -1.0;
+		i = 0;
+		joins.erase(joins.begin()+smallestIndex);
+	}
+	newjoins.insert(newjoins.begin()+count, joins[0]);
+	return newjoins;
+}
+
 
 void generate_stats(Statistics *stats){
 	char *relName[] = {"region", "nation", "part", "supplier", "partsupp", "customer", "orders", "lineitem"};
@@ -288,6 +333,7 @@ int main () {
 	ParseNode *traverse;
 	ParseNode *topNode = NULL;
 	int pipeID = 1;
+	string projectStart;
 
 	TableList *iterTable = tables;
 	while(iterTable != NULL){
@@ -318,33 +364,36 @@ int main () {
 	string table;
 	string attribute;
 
-	// for(unsigned i = 0; i < selects.size(); i++){
-	// 	selectIter = selects[i];
-	// 	if(selectIter.left->left->left->code == NAME){
-	// 		stats->GetRelation(selectIter.left->left->left, table);
-	// 	}
-	// 	else{
-	// 		stats->GetRelation(selectIter.left->left->right, table);
-	// 	}
+	for(unsigned i = 0; i < selects.size(); i++){
+		selectIter = selects[i];
+		if(selectIter.left->left->left->code == NAME){
+			stats->GetRelation(selectIter.left->left->left, table);
+		}
+		else{
+			stats->GetRelation(selectIter.left->left->right, table);
+		}
 
-	// 	traverse = leafs[table]; //Get the root node (Select File)
-	// 	projectStart = table;
-	// 	while(traverse->parent != NULL){
-	// 		traverse = traverse->parent;
-	// 	}
-	// 	insert = new ParseNode();
-	// 	traverse->parent = insert;
-	// 	insert->left = traverse;
-	// 	insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
-	// 	insert->type = SELECTP;
-	// 	insert->cnf = &selects[i]; //Need to implement CreateCNF in QueryTreeNode
-	// 	insert->lChildPipeID = traverse->outPipeID;
-	// 	insert->outPipeID = pipeID++;
-	// 	char *statApply = strdup(table.c_str());
-	// 	stats->Apply(&selectIter, &statApply,1);
-	// 	topNode = insert;
-	// }
+		traverse = leafs[table]; //Get the root node (Select File)
+		projectStart = table;
+		while(traverse->parent != NULL){
+			traverse = traverse->parent;
+		}
+		insert = new ParseNode();
+		traverse->parent = insert;
+		insert->left = traverse;
+		insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
+		insert->type = SELECTP;
+		insert->cnf = &selects[i]; //Need to implement CreateCNF in QueryTreeNode
+		insert->lChildPipeID = traverse->outPipeID;
+		insert->outPipeID = pipeID++;
+		char *statApply = strdup(table.c_str());
+		stats->Apply(&selectIter, &statApply,1);
+		topNode = insert;
+	}
 
+	if(joins.size() > 1){
+		joins = optimize_joins(joins, stats);
+	}
 
 
 	PrintAndList(boolean);
