@@ -52,7 +52,7 @@ gtest_main.o : $(FUSED_GTEST_H) $(GTEST_MAIN_CC)
 
 # make all
 # generates main gtesting.o and test scripts
-all: main gtesting.o test1 test2 test
+all: main
 
 # make test
 # generates only the test script - please do make all
@@ -65,8 +65,8 @@ test2: Record.o Comparison.o ComparisonEngine.o Schema.o File.o  BigQ.o Pipe.o D
 test: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o RelOp.o Function.o yyfunc.tab.o lex.yyfunc.o HeapFile.o SortedFile.o Statistics.o test.o
 	$(CC) -o $(BIN)test $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)yyfunc.tab.o $(BIN)lex.yyfunc.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)Statistics.o $(BIN)test.o -lfl $(LDFLAGS)
 
-main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o RelOp.o Function.o yyfunc.tab.o lex.yyfunc.o HeapFile.o SortedFile.o main.o
-	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)RelOp.o $(BIN)Function.o $(BIN)yyfunc.tab.o $(BIN)lex.yyfunc.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)main.o -lfl $(LDFLAGS)
+main: Record.o Comparison.o ComparisonEngine.o Schema.o File.o y.tab.o lex.yy.o  BigQ.o Pipe.o DBFile.o RelOp.o Function.o HeapFile.o SortedFile.o main.o
+	$(CC) -o $(BIN)main $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)RelOp.o $(BIN)Function.o  $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)DBFile.o $(BIN)main.o -lfl $(LDFLAGS)
 
 gtesting.o: gtest-all.o gtest_main.o BigQ.o Pipe.o
 	$(CC) $(BIN)Record.o $(BIN)Comparison.o $(BIN)ComparisonEngine.o $(BIN)Schema.o $(BIN)File.o $(BIN)y.tab.o $(BIN)lex.yy.o $(BIN)HeapFile.o $(BIN)SortedFile.o $(BIN)BigQ.o $(BIN)Pipe.o $(BIN)DBFile.o $(BIN)gtest_main.o $(BIN)gtest-all.o $(SOURCE)gtesting.cc -o $(BIN)$@ $(LDFLAGS)
