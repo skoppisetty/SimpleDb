@@ -3,11 +3,14 @@
 #define SCHEMA_H
 
 #include <stdio.h>
+#include <string>
 #include "Record.h"
 #include "Schema.h"
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+
+using namespace std;
 
 struct att_pair {
 	char *name;
@@ -59,7 +62,7 @@ public:
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
-
+	void updateName(string alias);
 	~Schema ();
 
 };

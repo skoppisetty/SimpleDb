@@ -2,6 +2,8 @@
 #include <iostream>
 #include "ParseTree.h"
 #include "Statistics.h"
+#include "ParseNode.h"
+#include <string.h>
 
 extern struct FuncOperator *finalFunction; // the aggregate function (NULL if no agg)
 extern struct TableList *tables; // the list of tables and aliases in the query
@@ -292,11 +294,13 @@ int main () {
 		if(iterTable->aliasAs != NULL){
 			leafs.insert(pair<string,ParseNode*>(iterTable->aliasAs, new ParseNode()));
 			stats->CopyRel(iterTable->tableName, iterTable->aliasAs);
+			insert = leafs[iterTable->aliasAs];
 		}
 		else{
 			leafs.insert(pair<string,ParseNode*>(iterTable->tableName, new ParseNode()));
+			insert = leafs[iterTable->tableName];
 		}
-		insert = leafs[iterTable->aliasAs];
+		
 		insert->schema = new Schema ("catalog", iterTable->tableName);
 		if(iterTable->aliasAs != 0){
 			insert->schema->updateName(string(iterTable->aliasAs));
@@ -314,34 +318,34 @@ int main () {
 	string table;
 	string attribute;
 
-	for(unsigned i = 0; i < selects.size(); i++){
-		selectIter = selects[i];
-		if(selectIter.left->left->left->code == NAME){
-			stats->GetRelation(selectIter.left->left->left, table);
-		}
-		else{
-			stats->GetRelation(selectIter.left->left->right, table);
-		}
+	// for(unsigned i = 0; i < selects.size(); i++){
+	// 	selectIter = selects[i];
+	// 	if(selectIter.left->left->left->code == NAME){
+	// 		stats->GetRelation(selectIter.left->left->left, table);
+	// 	}
+	// 	else{
+	// 		stats->GetRelation(selectIter.left->left->right, table);
+	// 	}
 
-		traverse = leafs[table]; //Get the root node (Select File)
-		projectStart = table;
-		while(traverse->parent != NULL){
-			traverse = traverse->parent;
-		}
-		insert = new ParseNode();
-		traverse->parent = insert;
-		insert->left = traverse;
-		insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
-		insert->type = SELECTP;
-		insert->cnf = &selects[i]; //Need to implement CreateCNF in QueryTreeNode
-		insert->lChildPipeID = traverse->outPipeID;
-		insert->outPipeID = pipeID++;
-		char *statApply = strdup(table.c_str());
-		stats->Apply(&selectIter, &statApply,1);
-		topNode = insert;
-	}
+	// 	traverse = leafs[table]; //Get the root node (Select File)
+	// 	projectStart = table;
+	// 	while(traverse->parent != NULL){
+	// 		traverse = traverse->parent;
+	// 	}
+	// 	insert = new ParseNode();
+	// 	traverse->parent = insert;
+	// 	insert->left = traverse;
+	// 	insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
+	// 	insert->type = SELECTP;
+	// 	insert->cnf = &selects[i]; //Need to implement CreateCNF in QueryTreeNode
+	// 	insert->lChildPipeID = traverse->outPipeID;
+	// 	insert->outPipeID = pipeID++;
+	// 	char *statApply = strdup(table.c_str());
+	// 	stats->Apply(&selectIter, &statApply,1);
+	// 	topNode = insert;
+	// }
 
-	
+
 
 	PrintAndList(boolean);
 	cout << endl;

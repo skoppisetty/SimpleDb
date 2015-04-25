@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+using namespace std;
 
 int Schema :: Find (char *attName) {
 
@@ -154,6 +155,18 @@ Schema :: Schema (char *fName, char *relName) {
 
 	fclose (foo);
 }
+
+void Schema::updateName(string alias){
+
+	for(int i = 0; i < numAtts; i++){
+		string old (myAtts[i].name);
+		free(myAtts[i].name);
+		string update (alias + "." + old);
+		myAtts[i].name = strdup(update.c_str());
+	}
+
+}
+
 
 Schema :: ~Schema () {
 	delete [] myAtts;
