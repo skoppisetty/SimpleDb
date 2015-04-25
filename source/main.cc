@@ -360,6 +360,7 @@ int main () {
 		iterTable = iterTable->next;	
 	}
 
+	// Adding select nodes to the tree
 	AndList selectIter;
 	string table;
 	string attribute;
@@ -391,9 +392,50 @@ int main () {
 		topNode = insert;
 	}
 
+	// Add join nodes to the tree
+	// Before adding , we need to optimize the order in which we need to add
 	if(joins.size() > 1){
 		joins = optimize_joins(joins, stats);
 	}
+
+	ParseNode *lTableNode;
+	ParseNode *rTableNode;
+	AndList curJoin;
+	string rel1;
+	string rel2;
+	for(unsigned i = 0; i < joins.size(); i++){
+		curJoin = joins[i];
+		rel1 = "";//curJoin.left->left->left->value;
+		stats->GetRelation(curJoin.left->left->left, rel1);
+		rel2 = "";//curJoin.left->left->right->value;
+		stats->GetRelation(curJoin.left->left->right, rel2);
+		table = rel1; //done for testing purposes. will remove later
+		//So, now we can get the top nodes for each of these
+		lTableNode = leafs[rel1];
+		rTableNode = leafs[rel2];
+		while(lTableNode->parent != NULL) {
+			lTableNode = lTableNode->parent;
+		}
+		while(rTableNode->parent != NULL) {
+			rTableNode = rTableNode->parent;
+		}
+		//At this point, we have the top node for the left, and for the right
+		//Now we join! MWAHAHAHA
+		insert = new ParseNode();
+		insert->type = JOIN;
+		insert->lChildPipeID = lTableNode->outPipeID;
+		insert->rChildPipeID = rTableNode->outPipeID;
+		insert->outPipeID = pipeID++;
+		insert->cnf = &joins[i];
+		insert->left = lTableNode;
+		insert->right = rTableNode;
+		lTableNode->parent = insert;
+		rTableNode->parent = insert;
+
+		insert->GenerateSchema();
+		topNode = insert;
+	}
+
 
 
 	PrintAndList(boolean);

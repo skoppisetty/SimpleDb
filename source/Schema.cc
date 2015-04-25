@@ -174,3 +174,19 @@ Schema :: ~Schema () {
 	myAtts = 0;
 }
 
+
+Schema :: Schema (Schema *left, Schema*right){
+	int leftAtts = left->numAtts;
+	int rightAtts = right->numAtts;
+	
+	numAtts = left->numAtts + right->numAtts;
+	myAtts = new Attribute[numAtts];
+
+	for(unsigned i = 0; i < leftAtts; i++){
+		myAtts[i] = left->myAtts[i];
+	}
+	for(unsigned i = 0; i < rightAtts; i++){
+		myAtts[i+leftAtts] = right->myAtts[i];
+	}
+}
+

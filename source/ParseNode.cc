@@ -36,3 +36,9 @@ ParseNode::~ParseNode(){
 void ParseNode::SetType(ParseNodeType setter){
 	type = setter;
 }
+
+void ParseNode::GenerateSchema(){
+	Schema *lChildSchema = left->schema;
+	Schema *rChildSchema = right->schema;
+	schema = new Schema(lChildSchema, rChildSchema);
+}

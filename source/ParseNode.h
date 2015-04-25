@@ -28,15 +28,14 @@ public:
 	int outPipeID;
 	Pipe *outPipe;
 
-
 	Schema *schema;
-
 	string path;
 
 	ParseNode();
-		~ParseNode();
+	~ParseNode();
 
 	void SetType(ParseNodeType setter);
+	void GenerateSchema();
 
 	AndList *cnf;
 
