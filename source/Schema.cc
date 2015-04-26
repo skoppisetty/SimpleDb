@@ -190,3 +190,13 @@ Schema :: Schema (Schema *left, Schema*right){
 	}
 }
 
+void Schema::Print(){
+	
+	for(int i = 0; i < numAtts; i++){
+		cout << "\t" << "Att "<<myAtts[i].name<<": ";
+		if(myAtts[i].myType == 0) cout << "INT" << endl;
+		else if(myAtts[i].myType == 1) cout << "DOUBLE" << endl;
+		else cout << "STRING" << endl;
+	}
+
+}

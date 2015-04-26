@@ -5,7 +5,7 @@
 
 #include "Schema.h"
 #include "Pipe.h"
-
+#include "Function.h"
 #include <vector>
 #include <string>
 
@@ -36,9 +36,20 @@ public:
 
 	void SetType(ParseNodeType setter);
 	void GenerateSchema();
+	
+	void GenerateFunction();
+	void GenerateOM(int numAtts, vector<int> whichAtts, vector<int> whichTypes);
+	
+	void PrintInOrder();
+	void PrintNode();
+	string GetTypeName ();
+	void PrintCNF();
+	void PrintFunction();
 
 	AndList *cnf;
-
+	FuncOperator *funcOp;
+	Function *func;
+	OrderMaker *order;
 };
 
 #endif

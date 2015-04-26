@@ -66,6 +66,7 @@ public:
 	int GetSortOrder (OrderMaker &order);
 	void updateName(string alias);
 	~Schema ();
+	void Print();
 
 };
 

@@ -436,11 +436,109 @@ int main () {
 		topNode = insert;
 	}
 
+	for(unsigned i = 0; i < joinDepSels.size(); i++){
+		traverse = topNode;
+		insert = new ParseNode();
+		traverse->parent = insert;
+		insert->left = traverse;
+		insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
+		insert->type = SELECTP;
+		insert->cnf = &joinDepSels[i]; //Need to implement CreateCNF in QueryTreeNode
+		insert->lChildPipeID = traverse->outPipeID;
+		insert->outPipeID = pipeID++;
+		topNode = insert;
+	}
 
 
-	PrintAndList(boolean);
-	cout << endl;
-	// PrintOrList(myOrList);
+	if(finalFunction != 0) { 
+		if(distinctFunc != 0){
+			insert = new ParseNode();
+			insert->type = DISTINCT;
+			insert->left = topNode;
+			insert->lChildPipeID = topNode->outPipeID;
+			insert->outPipeID = pipeID++;
+			insert->schema = topNode->schema;
+			topNode->parent = insert;
+			topNode = insert;		
+		}
+		if(groupingAtts != NULL){
+			insert = new ParseNode();
+			insert->type = SUM;
+			insert->left = topNode;
+			topNode->parent = insert;
+			insert->lChildPipeID = topNode->outPipeID;
+			insert->outPipeID = pipeID++;
+			insert->funcOp = finalFunction;
+			insert->schema = topNode->schema;
+			insert->GenerateFunction();
+		}
+		else{		
+			insert = new ParseNode();
+			insert->type = GROUP_BY;
+			insert->left = topNode;
+			topNode->parent = insert;
+			insert-> lChildPipeID = topNode->outPipeID;
+			insert->outPipeID = pipeID++;
+			insert->schema = topNode->schema;	
+			insert->order = new OrderMaker();	
+			int numAttsToGroup = 0;
+			vector<int> attsToGroup;
+			vector<int> whichType;
+			NameList *groupTraverse = groupingAtts;
+			while(groupTraverse){
+				numAttsToGroup++;
+				attsToGroup.push_back(insert->schema->Find(groupTraverse->name));
+				whichType.push_back(insert->schema->FindType(groupTraverse->name));
+				groupTraverse = groupTraverse->next;
+			}
+
+			insert->GenerateOM(numAttsToGroup, attsToGroup, whichType);
+			insert->funcOp = finalFunction;
+			insert->GenerateFunction();
+		}
+		topNode = insert;
+	}
+
+	if(distinctAtts != 0){
+		insert = new ParseNode();
+		insert->type = DISTINCT;
+		insert->left = topNode;
+		topNode->parent = insert;
+		insert->lChildPipeID = topNode->outPipeID;
+		insert->outPipeID = pipeID++;
+		insert->schema = topNode->schema;
+		topNode = insert;
+	}
+
+	if(attsToSelect != 0){ 
+		traverse = topNode;
+		insert = new ParseNode();
+		insert->type = PROJECT;
+		insert->left = traverse;
+		traverse->parent = insert;
+		insert->lChildPipeID = traverse->outPipeID;
+		insert->outPipeID = pipeID++;
+
+		vector<int> indexOfAttsToKeep;
+		Schema *oldSchema = traverse->schema;
+		NameList *attsTraverse = attsToSelect;
+		string attribute;
+
+		while(attsTraverse != 0){
+			attribute = attsTraverse-> name;
+			indexOfAttsToKeep.push_back(oldSchema->Find(const_cast<char*>(attribute.c_str())));
+			attsTraverse = attsTraverse->next;
+		}
+		Schema *newSchema = new Schema(oldSchema, indexOfAttsToKeep);
+		insert->schema = newSchema;
+		insert->schema->Print();
+	}
+	
+	cout << "PRINTING PARSE TREE IN ORDER: " << endl;
+	if(insert != NULL) insert->PrintInOrder();
+
+	// PrintAndList(boolean);
+	// cout << endl;
 
 
 }
