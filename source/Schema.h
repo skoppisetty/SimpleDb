@@ -10,6 +10,8 @@
 #include "Comparison.h"
 #include "ComparisonEngine.h"
 
+#include <vector>
+
 using namespace std;
 
 struct att_pair {
@@ -60,7 +62,7 @@ public:
 	Schema (char *fName, int num_atts, Attribute *atts);
 
 	Schema (Schema *left, Schema*right);
-
+	Schema (Schema *old, vector<int> attsToKeep);
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
