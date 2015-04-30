@@ -37,7 +37,7 @@ public:
 	void GenerateSchema();
 	
 	void GenerateFunction();
-	void GenerateOM(int numAtts, vector<int> whichAtts, vector<int> whichTypes);
+	void GenerateOrderMaker(int numAtts, vector<int> whichAtts, vector<int> whichTypes);
 	
 	void PrintInOrder();
 	void PrintNode();

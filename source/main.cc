@@ -424,37 +424,54 @@ int main () {
 		rel2 = "";//curJoin.left->left->right->value;
 		stats->GetRelation(curJoin.left->left->right, rel2);
 		table = rel1; //done for testing purposes. will remove later
-		//So, now we can get the top nodes for each of these
-		lTableNode = leafs[rel1];
+		lTableNode = leafs[rel1]; // get corresponding selectfile nodes
 		rTableNode = leafs[rel2];
-		while(lTableNode->parent != NULL) {
+		while(lTableNode->parent != NULL) { // check if there are select nodes above
 			lTableNode = lTableNode->parent;
 		}
 		while(rTableNode->parent != NULL) {
 			rTableNode = rTableNode->parent;
 		}
-		//At this point, we have the top node for the left, and for the right
-		//Now we join! MWAHAHAHA
+		// Values to set for join node
+		// ParseNodeType
+		// outPipeID
+		// lChildPipeID
+		// rChildPipeID
+		// left pointer
+		// right pointer
+		// schema
+		// cnf
 		insert = new ParseNode();
 		insert->type = JOIN;
 		insert->lChildPipeID = lTableNode->outPipeID;
 		insert->rChildPipeID = rTableNode->outPipeID;
 		insert->outPipeID = pipeID++;
 		insert->cnf = &joins[i];
-		insert->left = lTableNode;
-		insert->right = rTableNode;
-		lTableNode->parent = insert;
+
+		insert->left = lTableNode;		// Link new join node to 
+		insert->right = rTableNode;		// select/selectfile nodes
+		lTableNode->parent = insert; 
 		rTableNode->parent = insert;
 
-		insert->GenerateSchema();
+		insert->GenerateSchema(); // create the joined schema
 		topNode = insert;
 	}
 
-	for(unsigned i = 0; i < joinDepSels.size(); i++){
+	// Generate nodes for join dependent selects
+	for(int i = 0; i < joinDepSels.size(); i++){
 		traverse = topNode;
+		// Values to set for joinDepSels node
+		// ParseNodeType
+		// outPipeID
+		// lChildPipeID
+		// left pointer
+		// schema
+		// cnf
 		insert = new ParseNode();
-		traverse->parent = insert;
-		insert->left = traverse;
+
+		traverse->parent = insert;		// link new select node to 
+		insert->left = traverse;		// dependent join node.
+
 		insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
 		insert->type = SELECTP;
 		insert->cnf = &joinDepSels[i]; //Need to implement CreateCNF in QueryTreeNode
@@ -466,6 +483,13 @@ int main () {
 
 	if(finalFunction != 0) { 
 		if(distinctFunc != 0){
+			// Values to set for Distinct node
+			// ParseNodeType
+			// outPipeID
+			// lChildPipeID
+			// left pointer
+			// schema
+			// cnf
 			insert = new ParseNode();
 			insert->type = DISTINCT;
 			insert->left = topNode;
@@ -506,7 +530,7 @@ int main () {
 				groupTraverse = groupTraverse->next;
 			}
 
-			insert->GenerateOM(numAttsToGroup, attsToGroup, whichType);
+			insert->GenerateOrderMaker(numAttsToGroup, attsToGroup, whichType);
 			insert->funcOp = finalFunction;
 			insert->GenerateFunction();
 		}

@@ -2,16 +2,6 @@
 // #include "Function.h"
 // #include "Comparison.h"
 #include "ParseNode.h"
-
-// #include "SelectFile.h"
-// #include "SelectPipe.h"
-// #include "Join.h"
-// #include "GroupBy.h"
-// #include "Project.h"
-// #include "Sum.h"
-// #include "DuplicateRemoval.h"
-// #include "WriteOut.h"
-
 #include <iostream>
 #include <vector>
 
@@ -48,7 +38,7 @@ void ParseNode::GenerateFunction(){
 	func->GrowFromParseTree(funcOp, *schema);
 }
 
-void ParseNode::GenerateOM(int numAtts, vector<int> whichAtts, vector<int> whichTypes){
+void ParseNode::GenerateOrderMaker(int numAtts, vector<int> whichAtts, vector<int> whichTypes){
 		order = new OrderMaker();
 		order->numAtts = numAtts;
 		for(int i = 0; i < whichAtts.size(); i++){
@@ -68,19 +58,19 @@ void ParseNode::PrintInOrder(){
 }
 
 void ParseNode::PrintNode(){
-  cout << GetTypeName() << " operation" << endl;
+  cout << GetTypeName() << " Relational operation" << endl;
   switch (type){
     case SELECTF:
-		cout << "INPUT PIPE " << lChildPipeID << endl;
-		cout << "OUTPUT PIPE " << outPipeID << endl;
+		cout << "Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Output Pipe ID - " << outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;
 		schema->Print();
 		PrintCNF();
       break;
 
     case SELECTP:
-		cout << "INPUT PIPE " << lChildPipeID << endl;
-		cout << "OUTPUT PIPE " << outPipeID << endl;
+		cout << "Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Output Pipe ID - " << outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;
 		schema->Print();
 		cout << "SELECTION CNF :" << endl;
@@ -88,17 +78,17 @@ void ParseNode::PrintNode(){
       break;
 
     case PROJECT:
-		cout << "INPUT PIPE " << lChildPipeID << endl;
-		cout << "OUTPUT PIPE "<< outPipeID << endl;
+		cout << "Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Output Pipe ID - "<< outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;
 		schema->Print();
 		cout << endl << "************" << endl;
       break;
 
     case JOIN:
-		cout << "LEFT INPUT PIPE " << lChildPipeID << endl;
-		cout << "RIGHT INPUT PIPE " << rChildPipeID << endl;
-		cout << "OUTPUT PIPE " << outPipeID << endl;
+		cout << "Left Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Right Input Pipe ID - " << rChildPipeID << endl;
+		cout << "Output Pipe ID - " << outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;
 		schema->Print();
 		cout << endl << "CNF: " << endl;
@@ -106,8 +96,8 @@ void ParseNode::PrintNode(){
       break;
 
     case SUM:
-		cout << "LEFT INPUT PIPE " << lChildPipeID << endl;
-		cout << "OUTPUT PIPE " << outPipeID << endl;
+		cout << "Left Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Output Pipe ID - " << outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;
 		schema->Print();
 		cout << endl << "FUNCTION: " << endl;
@@ -115,8 +105,8 @@ void ParseNode::PrintNode(){
       break;
 
     case DISTINCT:
-		cout << "LEFT INPUT PIPE " << lChildPipeID << endl;
-		cout << "OUTPUT PIPE " << outPipeID << endl;
+		cout << "Left Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Output Pipe ID - " << outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;	
 		schema->Print();
 		cout << endl << "FUNCTION: " << endl;
@@ -124,8 +114,8 @@ void ParseNode::PrintNode(){
 	break;
 
     case GROUP_BY:
-		cout << "LEFT INPUT PIPE " << lChildPipeID << endl;
-		cout << "OUTPUT PIPE " << outPipeID << endl;
+		cout << "Left Input Pipe ID - " << lChildPipeID << endl;
+		cout << "Output Pipe ID - " << outPipeID << endl;
 		cout << "OUTPUT SCHEMA: " << endl;	
 		schema->Print();
 		cout << endl << "GROUPING ON " << endl;
@@ -135,7 +125,7 @@ void ParseNode::PrintNode(){
       break;
 
     case WRITE:
-		cout << "LEFT INPUT PIPE " << lChildPipeID << endl;
+		cout << "Left Input Pipe ID - " << lChildPipeID << endl;
 		cout << "OUTPUT FILE " << path << endl;
       break;
 
