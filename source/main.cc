@@ -366,7 +366,7 @@ int main () {
 		insert->SetType(SELECTF);
 		iterTable = iterTable->next;	
 	}
-
+	cout << "Done creating select file nodes!!" << endl;
 	// Adding select nodes to the tree
 	AndList selectIter;
 	string table;
@@ -405,7 +405,7 @@ int main () {
 		stats->Apply(&selectIter, &statApply,1);
 		topNode = insert;
 	}
-
+	cout << "Done creating select pipe nodes!!" << endl;
 	// Add join nodes to the tree
 	// Before adding , we need to optimize the order in which we need to add
 	if(joins.size() > 1){
@@ -456,7 +456,7 @@ int main () {
 		insert->GenerateSchema(); // create the joined schema
 		topNode = insert;
 	}
-
+	cout << "Done creating join nodes!!" << endl;
 	// Generate nodes for join dependent selects
 	for(int i = 0; i < joinDepSels.size(); i++){
 		traverse = topNode;
@@ -479,7 +479,7 @@ int main () {
 		insert->outPipeID = pipeID++;
 		topNode = insert;
 	}
-
+	cout << "Done creating select pipe nodes dependent on joins!!" << endl;
 
 	if(finalFunction != 0) { 
 		if(distinctFunc != 0){
@@ -492,30 +492,54 @@ int main () {
 			// cnf
 			insert = new ParseNode();
 			insert->type = DISTINCT;
+
 			insert->left = topNode;
 			insert->lChildPipeID = topNode->outPipeID;
+
 			insert->outPipeID = pipeID++;
 			insert->schema = topNode->schema;
 			topNode->parent = insert;
-			topNode = insert;		
+			topNode = insert;	
+			cout << "Done creating distinct nodes!!" << endl;	
 		}
+		
 		if(groupingAtts != NULL){
+			// Values to set for Distinct node
+			// ParseNodeType
+			// outPipeID
+			// lChildPipeID
+			// left pointer
+			// schema
+			// funcOp
 			insert = new ParseNode();
 			insert->type = SUM;
+
 			insert->left = topNode;
 			topNode->parent = insert;
 			insert->lChildPipeID = topNode->outPipeID;
+
 			insert->outPipeID = pipeID++;
 			insert->funcOp = finalFunction;
 			insert->schema = topNode->schema;
 			insert->GenerateFunction();
-		}
-		else{		
+			cout << "Done creating sum nodes!!" << endl;
+		}		
+		else{
+			// Values to set for Distinct node
+			// ParseNodeType
+			// outPipeID
+			// lChildPipeID
+			// left pointer
+			// schema
+			// order
+			// funcOp	
 			insert = new ParseNode();
 			insert->type = GROUP_BY;
+
 			insert->left = topNode;
 			topNode->parent = insert;
 			insert-> lChildPipeID = topNode->outPipeID;
+
 			insert->outPipeID = pipeID++;
 			insert->schema = topNode->schema;	
 			insert->order = new OrderMaker();	
@@ -535,6 +559,7 @@ int main () {
 			insert->GenerateFunction();
 		}
 		topNode = insert;
+		cout << "Done creating groupby nodes!!" << endl;
 	}
 
 	if(distinctAtts != 0){
@@ -546,8 +571,9 @@ int main () {
 		insert->outPipeID = pipeID++;
 		insert->schema = topNode->schema;
 		topNode = insert;
+		cout << "Done creating distinct nodes!!" << endl;
 	}
-
+	
 	if(attsToSelect != 0){ 
 		traverse = topNode;
 		// Values to set for Distinct node
@@ -561,7 +587,7 @@ int main () {
 
 		insert->left = traverse;
 		traverse->parent = insert;
-		
+
 		insert->lChildPipeID = traverse->outPipeID;
 		insert->outPipeID = pipeID++;
 
@@ -578,8 +604,10 @@ int main () {
 		Schema *newSchema = new Schema(oldSchema, indexOfAttsToKeep);
 		insert->schema = newSchema;
 		insert->schema->Print();
+		cout << "Done creating project nodes!!" << endl;
 	}
 	
+	cout << "------------------------------" << endl;
 	cout << "PRINTING PARSE TREE IN ORDER: " << endl;
 	if(insert != NULL) insert->PrintInOrder();
 
