@@ -20,7 +20,6 @@ public:
 	ParseNode *left;
 	ParseNode *right;
 
-	  //Pipe identifiers ( can be replaced by actual pipes later, or something)
 	int lChildPipeID;
 	Pipe *lInputPipe;
 	int rChildPipeID;

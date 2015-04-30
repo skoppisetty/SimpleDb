@@ -328,15 +328,15 @@ int main () {
 	cout << "Number of join dependent selects: " << joinDepSels.size() << endl;
 
 	// cout << whichOne << endl;
-	map<string, ParseNode*> leafs;
+	map<string, ParseNode*> leafs; // used to store the slelect file nodes
 	ParseNode *insert = NULL; //holder variable for when we need to insert stuff.
 	ParseNode *traverse;
 	ParseNode *topNode = NULL;
-	int pipeID = 1;
+	int pipeID = 1; // Initialise pipeID to 1
 	string projectStart;
-
-	TableList *iterTable = tables;
-	while(iterTable != NULL){
+	
+	TableList *iterTable = tables;	// parser populates the TableList structure
+	while(iterTable != NULL){		// Generating Select file nodes
 		if(iterTable->aliasAs != NULL){
 			leafs.insert(pair<string,ParseNode*>(iterTable->aliasAs, new ParseNode()));
 			stats->CopyRel(iterTable->tableName, iterTable->aliasAs);
@@ -346,12 +346,19 @@ int main () {
 			leafs.insert(pair<string,ParseNode*>(iterTable->tableName, new ParseNode()));
 			insert = leafs[iterTable->tableName];
 		}
-		
+		// Values to set in a node
+		// ParseNodeType
+		// outPipeID
+		// path
+		// schema
+
+		// Create scheme for each table
 		insert->schema = new Schema ("catalog", iterTable->tableName);
-		if(iterTable->aliasAs != 0){
+		if(iterTable->aliasAs != 0){ // update the table name if it is an alias
 			insert->schema->updateName(string(iterTable->aliasAs));
 		}
 		topNode = insert;
+
 		insert->outPipeID = pipeID++;
 		string base (iterTable->tableName);
 		string path ("bin/"+base+".bin");
@@ -365,7 +372,7 @@ int main () {
 	string table;
 	string attribute;
 
-	for(unsigned i = 0; i < selects.size(); i++){
+	for(int i = 0; i < selects.size(); i++){
 		selectIter = selects[i];
 		if(selectIter.left->left->left->code == NAME){
 			stats->GetRelation(selectIter.left->left->left, table);
@@ -379,8 +386,15 @@ int main () {
 		while(traverse->parent != NULL){
 			traverse = traverse->parent;
 		}
+		// Values to set for select node
+		// ParseNodeType
+		// outPipeID
+		// lChildPipeID
+		// left pointer
+		// schema
+		// cnf
 		insert = new ParseNode();
-		traverse->parent = insert;
+		traverse->parent = insert; // link select node to selectfile node
 		insert->left = traverse;
 		insert->schema = traverse->schema; //Schemas are the same throughout selects, only rows change
 		insert->type = SELECTP;
@@ -403,7 +417,7 @@ int main () {
 	AndList curJoin;
 	string rel1;
 	string rel2;
-	for(unsigned i = 0; i < joins.size(); i++){
+	for(int i = 0; i < joins.size(); i++){
 		curJoin = joins[i];
 		rel1 = "";//curJoin.left->left->left->value;
 		stats->GetRelation(curJoin.left->left->left, rel1);

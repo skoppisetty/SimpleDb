@@ -143,46 +143,42 @@ void ParseNode::PrintNode(){
 }
 
 string ParseNode::GetTypeName(){
-
   string name;
-
   switch (type){
 
     case SELECTF:
-      name = "SELECT FILE";
+      name = "SelectFile";
       break;
 
     case SELECTP:
-      name = "SELECT PIPE";
+      name = "SelectPipe";
       break;
 
     case PROJECT:
-      name = "PROJECT";
+      name = "Project";
       break;
 
     case JOIN:
-      name = "JOIN";
+      name = "Join";
       break;
 
     case SUM:
-      name = "SUM";
+      name = "Sum";
       break;
 
     case GROUP_BY:
-      name = "GROUP BY";
+      name = "GroupBy";
       break;
 
     case DISTINCT:
-      name = "DISTINCT";
+      name = "Distinct";
       break;
 
     case WRITE:
-      name = "WRITE";
+      name = "Write";
       break;
-  } // end switch
-
+  } 
   return name;
-
 } 
 
 void ParseNode::PrintCNF(){
