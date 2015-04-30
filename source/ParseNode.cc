@@ -54,7 +54,9 @@ void ParseNode::PrintInOrder(){
 	if(NULL != right){
 		right->PrintInOrder();
 	}
+	cout << "**********" << endl;
 	PrintNode();
+	cout << "**********" << endl;
 }
 
 void ParseNode::PrintNode(){

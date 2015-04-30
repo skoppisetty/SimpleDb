@@ -550,10 +550,18 @@ int main () {
 
 	if(attsToSelect != 0){ 
 		traverse = topNode;
+		// Values to set for Distinct node
+		// ParseNodeType
+		// outPipeID
+		// lChildPipeID
+		// left pointer
+		// schema
 		insert = new ParseNode();
 		insert->type = PROJECT;
+
 		insert->left = traverse;
 		traverse->parent = insert;
+		
 		insert->lChildPipeID = traverse->outPipeID;
 		insert->outPipeID = pipeID++;
 
