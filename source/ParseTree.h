@@ -54,6 +54,11 @@ struct NameList {
 	struct NameList *next;
 };
 
+struct myAttribute {
+  char *name;
+  int myType;
+};
+
 // used in boolean expressions... there's no reason to have both this
 // and FuncOperand, but both are here for legacy reasons!!
 struct Operand {

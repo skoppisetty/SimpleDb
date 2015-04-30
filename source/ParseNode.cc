@@ -225,3 +225,15 @@ void ParseNode::PrintCNF(){
 void ParseNode::PrintFunction(){
 	func->Print();
 }
+
+void ParseNode::ExecuteNode(){
+	if(left != NULL){
+		left->ExecuteNode();
+	}
+	if(right != NULL){
+		right->ExecuteNode();
+	}
+	// execute node
+	cout << "Executing type " << GetTypeName() << endl;
+	cout << "Executing type " << GetTypeName() << " done"<< endl;
+}	

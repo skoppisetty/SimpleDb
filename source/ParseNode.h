@@ -44,6 +44,7 @@ public:
 	string GetTypeName ();
 	void PrintCNF();
 	void PrintFunction();
+	void ExecuteNode();
 
 	AndList *cnf;
 	FuncOperator *funcOp;

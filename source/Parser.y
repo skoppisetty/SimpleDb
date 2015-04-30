@@ -1,11 +1,16 @@
  
 %{
 
-	#include "ParseTree.h" 
-	#include <stdio.h>
-	#include <string.h>
-	#include <stdlib.h>
-	#include <iostream>
+#include "ParseTree.h"
+#include <stdio.h>
+#include <string.h>
+#include <utility>
+#include <algorithm>
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+#include <vector>
+  using namespace std;
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
@@ -20,28 +25,56 @@
 	int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query 
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
 
+  int query = 0;
+  // maintenance commands
+  // CREATE
+  int createTable = 0; // 1 if the SQL is create table
+  int tableType = 0; // 1 for heap, 2 for sorted.
+  char * attrName;
+  // int attrType;
+  vector<myAttribute> attributes;
+  // INSERT
+  int insertTable = 0; // 1 if the command is Insert into table
+  int dropTable = 0; // 1 is the command is Drop table
+  // SET command
+  int outputChange = 0;
+  int planOnly = 0; // 1 if we are changing settings to planning only. Do not execute.
+  int setStdOut = 0;
+
+  bool keepGoing = true;
+  // shared variables, variables shared between more than one parsing.
+  string tableName;
+  string fileName;
+
 %}
 
 // this stores all of the types returned by production rules
 %union {
- 	struct FuncOperand *myOperand;
-	struct FuncOperator *myOperator; 
-	struct TableList *myTables;
-	struct ComparisonOp *myComparison;
-	struct Operand *myBoolOperand;
-	struct OrList *myOrList;
-	struct AndList *myAndList;
-	struct NameList *myNames;
-	char *actualChars;
-	char whichOne;
+  struct FuncOperand *myOperand;
+  struct FuncOperator *myOperator;
+  struct TableList *myTables;
+  struct ComparisonOp *myComparison;
+  struct Operand *myBoolOperand;
+  struct OrList *myOrList;
+  struct AndList *myAndList;
+  struct NameList *myNames;
+  struct AttrList *myAttrs;
+  char *actualChars;
+  char whichOne;
+  int attrType;
 }
 
+%token <actualChars> FilePath
 %token <actualChars> Name
+%token <actualChars> Attribute
 %token <actualChars> Float
 %token <actualChars> Int
 %token <actualChars> String
+%token CREATE
+%token DROP
+%token TABLE
 %token SELECT
-%token GROUP 
+%token GROUP
 %token DISTINCT
 %token BY
 %token FROM
@@ -50,17 +83,27 @@
 %token AS
 %token AND
 %token OR
+%token <attrType> INTEGER_ATTR FLOAT_ATTR STRING_ATTR
+%token HEAP SORTED
+%token ON
+%token SET
+%token INSERT INTO
+%token OUTPUT NONE STDOUT
+%token UPDATE STATISTICS
+%token SHUTDOWN
 
 %type <myOrList> OrList
 %type <myAndList> AndList
 %type <myOperand> SimpleExp
 %type <myOperator> CompoundExp
-%type <whichOne> Op 
+%type <whichOne> Op
 %type <myComparison> BoolComp
 %type <myComparison> Condition
 %type <myTables> Tables
 %type <myBoolOperand> Literal
 %type <myNames> Atts
+%type <myAttrList> AttrList
+%type <attrType> AttrType
 
 %start SQL
 
@@ -76,16 +119,99 @@
 
 SQL: SELECT WhatIWant FROM Tables WHERE AndList
 {
-	tables = $4;
-	boolean = $6;	
-	groupingAtts = NULL;
-}
+  query = 1;
+  tables = $4;
+  boolean = $6;
+  groupingAtts = NULL;
+  }
 
 | SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts
 {
-	tables = $4;
-	boolean = $6;	
-	groupingAtts = $9;
+  query = 1;
+  tables = $4;
+  boolean = $6;
+  groupingAtts = $9;
+}
+| CREATE TABLE Name '(' AttrList ')' AS DBFileType
+{
+  tableName = $3;
+  createTable = 1;
+  reverse(attributes.begin(), attributes.end());
+}
+| DROP TABLE Name
+{
+  dropTable = 1;
+  tableName = $3;
+}
+| SET OUTPUT OutSetting
+{
+  outputChange = 1;
+}
+| INSERT FilePath INTO Name
+{
+  insertTable = 1;
+  fileName = $2;
+}
+| SHUTDOWN
+{
+  query = -1;
+  keepGoing = false;
+};
+
+DBFileType : HEAP
+{
+  tableType = 1;
+}
+| SORTED ON Atts
+{
+  tableType = 2;
+};
+
+OutSetting: STDOUT
+{
+  setStdOut = 1;
+  fileName = "";
+}
+| NONE
+{
+  planOnly = 1;
+  fileName = "";
+}
+| FilePath
+{
+  string fn($1);
+  fileName = $1;
+  // printf("found ### %s ###\n", $1);
+  // printf("%p\n", $1);
+};
+
+AttrList: Name AttrType ',' AttrList // non terminal type, more than one attribute
+{
+  myAttribute attr;
+  attr.name = $1;
+  attr.myType = $2;
+  attributes.push_back(attr);
+}
+| Name AttrType // final attribute in list
+{
+  // const static int IntType = 0, DoubleType = 1, StringType = 2;
+  myAttribute attr;
+  attr.name = $1;
+  attr.myType = $2;
+  attributes.push_back(attr);
+};
+
+AttrType : INTEGER_ATTR
+{
+  $$ = 0;
+}
+| FLOAT_ATTR
+{
+  $$ = 1;
+}
+| STRING_ATTR
+{
+  $$ = 2;
 };
 
 WhatIWant: Function ',' Atts 
